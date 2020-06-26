@@ -69,7 +69,7 @@ Have a look onto the [latest release page](https://github.com/mvisonneau/vac/rel
 ~$ cat - <<EOF >> ~/.aws/credentials
 
 [vac]
-credential_process = $(which vac)
+credential_process = $(which vac) get
 EOF
 ```
 
@@ -99,7 +99,7 @@ USAGE:
    vac [global options] command [command options] [arguments...]
 
 COMMANDS:
-   switch   select a new engine and role to use
+   get      get the creds in credential_process format (json)
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:

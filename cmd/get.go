@@ -19,8 +19,8 @@ type Output struct {
 	Expiration      time.Time
 }
 
-// Run ..
-func Run(ctx *cli.Context) (int, error) {
+// Get the credentials from Vault or statefile
+func Get(ctx *cli.Context) (int, error) {
 	cfg, err := configure(ctx)
 	if err != nil {
 		return 1, err

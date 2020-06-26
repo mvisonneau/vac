@@ -52,7 +52,7 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 		},
 	}
 
-	app.Action = cmd.ExecWrapper(cmd.Run)
+	app.Action = cmd.ExecWrapper(cmd.Switch)
 
 	app.Commands = []cli.Command{
 		// {
@@ -61,9 +61,9 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 		// 	Action: cmd.ExecWrapper(cmd.Status),
 		// },
 		{
-			Name:   "switch",
-			Usage:  "select a new engine and role to use",
-			Action: cmd.ExecWrapper(cmd.Switch),
+			Name:   "get",
+			Usage:  "get the creds in credential_process format (json)",
+			Action: cmd.ExecWrapper(cmd.Get),
 		},
 	}
 
