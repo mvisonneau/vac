@@ -53,6 +53,9 @@ func Switch(ctx *cli.Context) (int, error) {
 		},
 		fuzzyfinder.WithDefaultIndex(indexOf(s.Current.Role, roles)),
 	)
+	if err != nil {
+		return 1, err
+	}
 
 	s.SetCurrentEngine(awsSecretEngines[selectedAWSSecretEngineID])
 	s.SetCurrentRole(roles[selectedRoleID])
