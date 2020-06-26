@@ -7,6 +7,8 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
+## [0.0.1] - 2020-06-26
+
 ### Added
 
 - Working state of the app
