@@ -3,7 +3,6 @@ module github.com/mvisonneau/vac
 go 1.14
 
 require (
-	github.com/apex/log v1.4.0
 	github.com/hashicorp/vault/api v1.0.4
 	github.com/ktr0731/go-fuzzyfinder v0.2.1
 	github.com/mitchellh/go-homedir v1.1.0

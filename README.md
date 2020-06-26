@@ -69,7 +69,7 @@ Have a look onto the [latest release page](https://github.com/mvisonneau/vac/rel
 ~$ cat - <<EOF >> ~/.aws/credentials
 
 [vac]
-credential_process = $(which terraform)
+credential_process = $(which vac)
 EOF
 ```
 
