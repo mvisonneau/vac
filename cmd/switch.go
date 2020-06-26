@@ -25,46 +25,57 @@ func Switch(ctx *cli.Context) (int, error) {
 		return 1, err
 	}
 
-	awsSecretEngines, err := vac.ListAWSSecretEngines()
-	if err != nil {
-		log.Fatal(err)
+	if cfg.Engine == "" {
+		awsSecretEngines, err := vac.ListAWSSecretEngines()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		selectedAWSSecretEngineID, err := fuzzyfinder.Find(
+			awsSecretEngines,
+			func(i int) string {
+				return awsSecretEngines[i]
+			},
+			fuzzyfinder.WithDefaultIndex(indexOf(s.Current.Engine, awsSecretEngines)),
+		)
+		if err != nil {
+			return 1, err
+		}
+		s.SetCurrentEngine(awsSecretEngines[selectedAWSSecretEngineID])
+	} else {
+		s.SetCurrentEngine(cfg.Engine)
 	}
 
-	selectedAWSSecretEngineID, err := fuzzyfinder.Find(
-		awsSecretEngines,
-		func(i int) string {
-			return awsSecretEngines[i]
-		},
-		fuzzyfinder.WithDefaultIndex(indexOf(s.Current.Engine, awsSecretEngines)),
-	)
-	if err != nil {
-		return 1, err
+	if cfg.Role == "" {
+		roles, err := vac.ListAWSSecretEngineRoles(s.Current.Engine)
+		if err != nil {
+			return 1, err
+		}
+
+		selectedRoleID, err := fuzzyfinder.Find(
+			roles,
+			func(i int) string {
+				return roles[i]
+			},
+			fuzzyfinder.WithDefaultIndex(indexOf(s.Current.Role, roles)),
+		)
+		if err != nil {
+			return 1, err
+		}
+		s.SetCurrentRole(roles[selectedRoleID])
+	} else {
+		s.SetCurrentRole(cfg.Role)
 	}
 
-	roles, err := vac.ListAWSSecretEngineRoles(awsSecretEngines[selectedAWSSecretEngineID])
-	if err != nil {
-		return 1, err
-	}
-
-	selectedRoleID, err := fuzzyfinder.Find(
-		roles,
-		func(i int) string {
-			return roles[i]
-		},
-		fuzzyfinder.WithDefaultIndex(indexOf(s.Current.Role, roles)),
-	)
-	if err != nil {
-		return 1, err
-	}
-
-	s.SetCurrentEngine(awsSecretEngines[selectedAWSSecretEngineID])
-	s.SetCurrentRole(roles[selectedRoleID])
+	// Write state on disk
 	if err = state.Write(s, cfg.StatePath); err != nil {
 		return 1, err
 	}
 
-	log.Infof("engine: %s\n", s.Current.Engine)
-	log.Infof("role: %s\n", s.Current.Role)
+	log.WithFields(log.Fields{
+		"engine": s.Current.Engine,
+		"role":   s.Current.Role,
+	}).Debugf("updated current engine & role in statefile")
 
 	return 0, nil
 }

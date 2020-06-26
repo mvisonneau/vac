@@ -37,20 +37,39 @@ func Run(ctx *cli.Context) (int, error) {
 	}
 
 	// Check if a engine is currently selected
-	if s.Current.Engine == "" || s.Current.Role == "" {
+	if (s.Current.Engine == "" && cfg.Engine == "") ||
+		(s.Current.Role == "" && cfg.Role == "") {
 		if code, err := Switch(ctx); code != 0 {
 			return code, err
 		}
+		// Reload the state
+		s, err = state.Read(cfg.StatePath)
+		if err != nil {
+			return 1, err
+		}
 	}
 
-	creds := s.GetCurrentAWSCredentials()
+	var engine, role string
+	if cfg.Engine != "" {
+		engine = cfg.Engine
+	} else {
+		engine = s.Current.Engine
+	}
+
+	if cfg.Role != "" {
+		role = cfg.Role
+	} else {
+		role = s.Current.Role
+	}
+
+	creds := s.GetAWSCredentials(engine, role)
 	if creds == nil || time.Now().After(creds.Metadata.ExpireAt) {
-		creds, err = vac.GenerateAWSCredentials(s.Current.Engine, s.Current.Role)
+		creds, err = vac.GenerateAWSCredentials(engine, role)
 		if err != nil {
 			return 1, err
 		}
 
-		s.SetCurrentAWSCredentials(creds)
+		s.SetAWSCredentials(engine, role, creds)
 		if err = state.Write(s, cfg.StatePath); err != nil {
 			return 1, err
 		}
