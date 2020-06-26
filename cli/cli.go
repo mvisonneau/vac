@@ -40,13 +40,13 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 		},
 		cli.StringFlag{
 			Name:   "log-level",
-			EnvVar: "GCPE_LOG_LEVEL",
+			EnvVar: "VAC_LOG_LEVEL",
 			Usage:  "log `level` (debug,info,warn,fatal,panic)",
 			Value:  "info",
 		},
 		cli.StringFlag{
 			Name:   "log-format",
-			EnvVar: "GCPE_LOG_FORMAT",
+			EnvVar: "VAC_LOG_FORMAT",
 			Usage:  "log `format` (json,text)",
 			Value:  "text",
 		},

@@ -106,8 +106,8 @@ GLOBAL OPTIONS:
    --engine path, -e path  engine path [$VAC_ENGINE]
    --role name, -r name    role name [$VAC_ROLE]
    --state path, -s path   state path (default: "~/.vac_state") [$VAC_STATE_PATH]
-   --log-level level       log level (debug,info,warn,fatal,panic) (default: "info") [$GCPE_LOG_LEVEL]
-   --log-format format     log format (json,text) (default: "text") [$GCPE_LOG_FORMAT]
+   --log-level level       log level (debug,info,warn,fatal,panic) (default: "info") [$VAC_LOG_LEVEL]
+   --log-format format     log format (json,text) (default: "text") [$VAC_LOG_FORMAT]
    --help, -h              show help
 ```
 
