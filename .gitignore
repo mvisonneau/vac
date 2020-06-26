@@ -1,0 +1,6 @@
+**.tgz
+**.DS_Store
+coverage.out
+dist
+vac
+vendor
