@@ -84,7 +84,7 @@ EOF
 - Finally asusming that you have sorted out your Vault accesses already, you need to chose which engine/role to use:
 
 ```bash
-~$ vac switch
+~$ vac
 [follow prompt]
 ```
 
