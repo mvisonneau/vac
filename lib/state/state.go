@@ -40,7 +40,7 @@ func Write(c *State, filePath string) error {
 	if err != nil {
 		return errors.Wrap(err, "marshalling state into json")
 	}
-	return ioutil.WriteFile(filePath, marshalledContent, 0644)
+	return ioutil.WriteFile(filePath, marshalledContent, 0600)
 }
 
 // SetCurrentEngine ..
