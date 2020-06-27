@@ -10,7 +10,7 @@
 
 ## TL:DR
 
-There will be a nice GIF or asciicinema here soon!
+[![asciicast](https://asciinema.org/a/343653.svg)](https://asciinema.org/a/343653)
 
 ## Install
 
