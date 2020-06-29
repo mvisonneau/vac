@@ -7,6 +7,15 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
+### Added
+
+- New `status` function to disclose some info about the current context, cached credentials and Vault server connectivity
+
+### Changed
+
+- Removed some typos in the CLI flags definition
+- Removed unused parameter RenewBefore on the AWSCredential objects
+
 ## [0.0.1] - 2020-06-26
 
 ### Added
