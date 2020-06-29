@@ -120,7 +120,7 @@ GLOBAL OPTIONS:
 
 You are forced to use the fuzzyfinding capabilities. This is particularily useful in a non-TTY usage scenario. eg:
 
-```toml
+```
 # ~/.aws/credentials
 [default]
 credential_process = /usr/local/bin/vac get
@@ -148,7 +148,7 @@ You can use the `status` command in order to retrieve some info about:
 - Cached credentials
 - Vault server connectivity details
 
-```shell
+```
 ~$ vac status
 +----------------+---------------------+
 |  LOCAL STATE   |                     |
