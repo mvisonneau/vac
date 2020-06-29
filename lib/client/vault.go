@@ -14,9 +14,8 @@ import (
 // AWSCredentials ..
 type AWSCredentials struct {
 	Metadata struct {
-		CreatedAt   time.Time `json:"created_at"`
-		ExpireAt    time.Time `json:"expire_at"`
-		RenewBefore time.Time `json:"renew_before"`
+		CreatedAt time.Time `json:"created_at"`
+		ExpireAt  time.Time `json:"expire_at"`
 	} `json:"metadata"`
 	AccessKeyID     string `json:"access_key_id"`
 	SecretAccessKey string `json:"secret_access_key"`
