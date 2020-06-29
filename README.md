@@ -12,7 +12,7 @@ It is heavily inspired from [jantman/vault-aws-creds](https://github.com/jantman
 
 Written in golang, it can work on most common platforms (Linux, MacOS, Windows).
 
-## TL:DR
+It leverages the [external process sourcing](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sourcing-external.html) capabilities of the AWS CLI config definition.
 
 [![asciicast](https://asciinema.org/a/343653.svg)](https://asciinema.org/a/343653)
 
@@ -156,6 +156,30 @@ OPTIONS:
    --min-ttl duration           min-ttl duration (default: 0s) [$VAC_MIN_TTL]
    --ttl duration, -t duration  ttl duration (default: 0s) [$VAC_TTL]
    --force-generate, -f         bypass currently cached creds and generate new ones [$VAC_FORCE_GENERATE]
+```
+
+#### Examples
+
+```bash
+# Generate credentials valid for 1h
+~$ vac get --ttl 1h
+
+# Generate credentials valid for 1h but replace them if existing ones expire in less than 30m
+~$ vac get --ttl 1h --min-ttl 30m
+
+# Generate credentials valid for 2h, indepently if some valid ones are still present in the cache
+~$ vac get --ttl 2 -f
+```
+
+you can of course define them in your `~/.aws/credentials` profiles as well
+
+```bash
+~$ cat - <<EOF >> ~/.aws/credentials
+[vac-4h]
+credential_process = $(which vac) get --ttl 4h
+[vac-no-cache]
+credential_process = $(which vac) get -f
+EOF
 ```
 
 ### Get information about current configuration
