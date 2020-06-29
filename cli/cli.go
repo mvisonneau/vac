@@ -21,7 +21,7 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 	app.Usage = "Manage AWS credentials dynamically using Vault"
 	app.EnableBashCompletion = true
 
-	app.Flags = []cli.Flag{
+	app.Flags = cli.FlagsByName{
 		cli.StringFlag{
 			Name:   "engine, e",
 			EnvVar: "VAC_ENGINE",
@@ -54,11 +54,30 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 
 	app.Action = cmd.ExecWrapper(cmd.Switch)
 
-	app.Commands = []cli.Command{
+	app.Commands = cli.CommandsByName{
 		{
 			Name:   "get",
 			Usage:  "get the creds in credential_process format (json)",
 			Action: cmd.ExecWrapper(cmd.Get),
+			Flags: cli.FlagsByName{
+				cli.DurationFlag{
+					Name:   "min-ttl",
+					EnvVar: "VAC_MIN_TTL",
+					Usage:  "min-ttl `duration`",
+					Value:  0,
+				},
+				cli.DurationFlag{
+					Name:   "ttl, t",
+					EnvVar: "VAC_TTL",
+					Usage:  "ttl `duration`",
+					Value:  0,
+				},
+				cli.BoolFlag{
+					Name:   "force-generate, f",
+					EnvVar: "VAC_FORCE_GENERATE",
+					Usage:  "bypass currently cached creds and generate new ones",
+				},
+			},
 		},
 		{
 			Name:   "status",

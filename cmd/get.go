@@ -7,6 +7,7 @@ import (
 
 	"github.com/mvisonneau/vac/lib/client"
 	"github.com/mvisonneau/vac/lib/state"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -19,11 +20,30 @@ type Output struct {
 	Expiration      time.Time
 }
 
+// GetConfig ..
+type GetConfig struct {
+	*Config
+	TTL           time.Duration
+	MinTTL        time.Duration
+	ForceGenerate bool
+}
+
 // Get the credentials from Vault or statefile
 func Get(ctx *cli.Context) (int, error) {
-	cfg, err := configure(ctx)
+	globalCfg, err := configure(ctx)
 	if err != nil {
 		return 1, err
+	}
+
+	cfg := &GetConfig{
+		Config:        globalCfg,
+		TTL:           ctx.Duration("ttl"),
+		MinTTL:        ctx.Duration("min-ttl"),
+		ForceGenerate: ctx.Bool("force-generate"),
+	}
+
+	if cfg.TTL > 0 && cfg.MinTTL > cfg.TTL {
+		return 1, fmt.Errorf("'min-ttl' cannot be longer than 'ttl'")
 	}
 
 	vac, err := client.New()
@@ -63,8 +83,8 @@ func Get(ctx *cli.Context) (int, error) {
 	}
 
 	creds := s.GetAWSCredentials(engine, role)
-	if creds == nil || time.Now().After(creds.Metadata.ExpireAt) {
-		creds, err = vac.GenerateAWSCredentials(engine, role)
+	if shouldRegenerateCreds(creds, cfg.MinTTL, cfg.ForceGenerate) {
+		creds, err = vac.GenerateAWSCredentials(engine, role, cfg.TTL)
 		if err != nil {
 			return 1, err
 		}
@@ -90,4 +110,29 @@ func Get(ctx *cli.Context) (int, error) {
 
 	fmt.Println(string(outputBytes))
 	return 0, nil
+}
+
+func shouldRegenerateCreds(creds *client.AWSCredentials, minTTL time.Duration, forceGenerate bool) bool {
+	if creds == nil {
+		log.Debug("no cached credentials found, generating new ones")
+		return true
+	}
+
+	if time.Now().After(creds.Metadata.ExpireAt) {
+		log.Debug("cached credentials expired, generating new ones")
+		return true
+	}
+
+	if minTTL > 0 && time.Now().Add(minTTL).After(creds.Metadata.ExpireAt) {
+		log.Debug("cached credentials expiring before the defined minimum TTL, generating new ones")
+		return true
+	}
+
+	if forceGenerate {
+		log.Debug("valid creds found but force-generate flag is set, generating new ones")
+		return true
+	}
+
+	log.Debug("using cached credentials")
+	return false
 }

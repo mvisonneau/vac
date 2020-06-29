@@ -140,6 +140,24 @@ You can also dynamically switch your context without a prompt by doing the follo
 ~$ vac -e dev -r admin
 ```
 
+### TTL and cache bypass
+
+The `get` command can take various flags in order to manage the credentials TTLs but also when to refresh them:
+
+```
+~$ vac get --help
+NAME:
+   vac get - get the creds in credential_process format (json)
+
+USAGE:
+   vac get [command options] [arguments...]
+
+OPTIONS:
+   --min-ttl duration           min-ttl duration (default: 0s) [$VAC_MIN_TTL]
+   --ttl duration, -t duration  ttl duration (default: 0s) [$VAC_TTL]
+   --force-generate, -f         bypass currently cached creds and generate new ones [$VAC_FORCE_GENERATE]
+```
+
 ### Get information about current configuration
 
 You can use the `status` command in order to retrieve some info about:

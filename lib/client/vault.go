@@ -86,10 +86,12 @@ func (c *Client) ListAWSSecretEngineRoles(awsSecretEngine string) (roles []strin
 }
 
 // GenerateAWSCredentials ..
-func (c *Client) GenerateAWSCredentials(secretEngineName, secretEngineRole string) (creds *AWSCredentials, err error) {
-	payload := make(map[string]interface{})
+func (c *Client) GenerateAWSCredentials(secretEngineName, secretEngineRole string, ttl time.Duration) (creds *AWSCredentials, err error) {
 	output := &vault.Secret{}
-	//payload["plaintext"] = base64.StdEncoding.EncodeToString([]byte(value))
+	payload := make(map[string]interface{})
+	if ttl > 0 {
+		payload["ttl"] = ttl.Seconds()
+	}
 	output, err = c.Logical().Write(fmt.Sprintf("/%s/sts/%s", secretEngineName, secretEngineRole), payload)
 	if err != nil {
 		return

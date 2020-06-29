@@ -9,12 +9,14 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ### Added
 
+- New `ttl`, `min-ttl` and `force-generate` flags on the **get** function to manipulate credentials lengths
 - New `status` function to disclose some info about the current context, cached credentials and Vault server connectivity
 
 ### Changed
 
 - Removed some typos in the CLI flags definition
 - Removed unused parameter RenewBefore on the AWSCredential objects
+- Added some tests
 
 ## [0.0.1] - 2020-06-26
 
