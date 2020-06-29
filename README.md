@@ -6,7 +6,11 @@
 [![Build Status](https://cloud.drone.io/api/badges/mvisonneau/vac/status.svg)](https://cloud.drone.io/mvisonneau/vac)
 [![Coverage Status](https://coveralls.io/repos/github/mvisonneau/vac/badge.svg?branch=master)](https://coveralls.io/github/mvisonneau/vac?branch=master)
 
-`vac` is a wrapper to manage AWS credentials dynamically using [Hashicorp Vault](https://www.vaultproject.io/). It is heavily inspired from [jantman/vault-aws-creds](https://github.com/jantman/vault-aws-creds) and [ahmetb/kubectx](https://github.com/ahmetb/kubectx). Written in golang, it can work on most common platforms (Linux, MacOS, Windows).
+`vac` is a wrapper to manage AWS credentials dynamically using [Hashicorp Vault](https://www.vaultproject.io/).
+
+It is heavily inspired from [jantman/vault-aws-creds](https://github.com/jantman/vault-aws-creds) and [ahmetb/kubectx](https://github.com/ahmetb/kubectx).
+
+Written in golang, it can work on most common platforms (Linux, MacOS, Windows).
 
 ## TL:DR
 
@@ -63,7 +67,7 @@ Have a look onto the [latest release page](https://github.com/mvisonneau/vac/rel
 
 ## Quickstart
 
-- Once you have installed it, create a new profile in your `~/.aws/credentials` file:
+- Once you have [installed it](#install), create a new profile in your `~/.aws/credentials` file:
 
 ```bash
 ~$ cat - <<EOF >> ~/.aws/credentials
@@ -81,14 +85,14 @@ EOF
 
 (you can omit this part by using it as your default profile instead)
 
-- Finally asusming that you have sorted out your Vault accesses already, you need to chose which engine/role to use:
+- Finally assuming that you have sorted out your Vault accesses already, you need to chose which engine/role to use:
 
 ```bash
 ~$ vac
 [follow prompt]
 ```
 
-## Usage
+## Advanced usage
 
 ```bash
 ~$ vac --help
@@ -100,6 +104,7 @@ USAGE:
 
 COMMANDS:
    get      get the creds in credential_process format (json)
+   status   returns some info about the current context, cached credentials and Vault server connectivity
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -110,6 +115,107 @@ GLOBAL OPTIONS:
    --log-format format     log format (json,text) (default: "text") [$VAC_LOG_FORMAT]
    --help, -h              show help
 ```
+
+### Static configuration
+
+You are forced to use the fuzzyfinding capabilities. This is particularily useful in a non-TTY usage scenario. eg:
+
+```toml
+# ~/.aws/credentials
+[default]
+credential_process = /usr/local/bin/vac get
+[dev-admin]
+credential_process = /usr/local/bin/vac -e dev -r admin get
+[staging-admin]
+credential_process = /usr/local/bin/vac -e staging -r admin get
+```
+
+You can also dynamically switch your context without a prompt by doing the following:
+
+```shell
+# only prompt for chosing a role in the "dev" engine
+~$ vac -e dev
+
+# no prompt, automatically switch to "admin" role in the "dev" engine
+~$ vac -e dev -r admin
+```
+
+### Get information about current configuration
+
+You can use the `status` command in order to retrieve some info about:
+
+- Current context (selected engine/role)
+- Cached credentials
+- Vault server connectivity details
+
+```shell
+~$ vac status
++----------------+---------------------+
+|  LOCAL STATE   |                     |
++----------------+---------------------+
+| Current Engine | dev                 |
+| Current Role   | admin               |
++----------------+---------------------+
++-----------+--------+---------------+
+|  ENGINE   |  ROLE  |  EXPIRATION   |
++-----------+--------+---------------+
+| dev       | admin  | in 2 hours    |
+| prod      | admin  | 2 days ago    |
+| staging   | admin  | 2 days ago    |
++-----------+--------+---------------+
++-------------+--------------------------------------+
+|    VAULT    |                                      |
++-------------+--------------------------------------+
+| ClusterID   | 0e6b2fcd-e84b-a7cd-f84d-6b31947a8d73 |
+| ClusterName | vault-cluster-90f72c95               |
+| Initialized | true                                 |
+| Sealed      | false                                |
+| Version     | 1.4.2                                |
++-------------+--------------------------------------+
+```
+
+## Required Vault policies
+
+To be able to use all the lookup features, you will need some 
+
+```hcl
+# List available AWS engines
+path "sys/mounts" {
+  capabilities = ["read"]
+}
+
+# List all the roles for each <engine_path>
+# path "<engine_path>/roles" {
+#  capabilities = ["list"]
+# }
+# eg:
+path "dev/roles" {
+ capabilities = ["list"]
+}
+
+path "staging/roles" {
+ capabilities = ["list"]
+}
+
+# Assume the role
+# path "<engine_path>/sts/<role>" {
+#  capabilities = ["update"]
+# }
+# eg:
+
+path "dev/sts/admin" {
+  capabilities = ["update"]
+}
+
+path "staging/sts/admin" {
+  capabilities = ["update"]
+}
+```
+
+## Limitations
+
+- It currently **only supports** authenticating using STS [assumed_role](https://www.vaultproject.io/docs/secrets/aws#sts-assumerole) or [federation_tokens](https://www.vaultproject.io/docs/secrets/aws#sts-federation-tokens) methods.
+- It will list all available engines and roles according to the defined policies. This result may not be relevant to what an user can actually assume.
 
 ## Contribute
 

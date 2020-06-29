@@ -56,14 +56,14 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 
 	app.Commands = []cli.Command{
 		{
-			Name:   "status",
-			Usage:  "returns some info about the current context, cached credentials and Vault server connectivity",
-			Action: cmd.ExecWrapper(cmd.Status),
-		},
-		{
 			Name:   "get",
 			Usage:  "get the creds in credential_process format (json)",
 			Action: cmd.ExecWrapper(cmd.Get),
+		},
+		{
+			Name:   "status",
+			Usage:  "returns some info about the current context, cached credentials and Vault server connectivity",
+			Action: cmd.ExecWrapper(cmd.Status),
 		},
 	}
 
