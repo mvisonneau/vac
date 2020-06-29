@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"sort"
 
 	"github.com/mvisonneau/vac/lib/client"
 	"github.com/pkg/errors"
@@ -84,4 +85,24 @@ func (s *State) GetAWSCredentials(engine, role string) *client.AWSCredentials {
 		}
 	}
 	return nil
+}
+
+// GetCachedEngines ..
+func (s *State) GetCachedEngines() []string {
+	keys := make([]string, 0, len(s.AWSCredentials))
+	for k := range s.AWSCredentials {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+// GetCachedEngineRoles ..
+func (s *State) GetCachedEngineRoles(engine string) []string {
+	keys := make([]string, 0, len(s.AWSCredentials[engine]))
+	for k := range s.AWSCredentials[engine] {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }

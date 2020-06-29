@@ -43,11 +43,12 @@ func Status(ctx *cli.Context) (int, error) {
 	credsTable := tablewriter.NewWriter(os.Stdout)
 	credsTable.SetHeader([]string{"ENGINE", "ROLE", "EXPIRATION"})
 
-	for engine, mapRoles := range s.AWSCredentials {
-		for role, creds := range mapRoles {
+	for _, engine := range s.GetCachedEngines() {
+		for _, role := range s.GetCachedEngineRoles(engine) {
+			creds := s.AWSCredentials[engine][role]
 			var color int
 			if creds.Metadata.ExpireAt.After(time.Now().Add(time.Minute * 5)) {
-				color = tablewriter.FgRedColor
+				color = tablewriter.FgGreenColor
 			} else if creds.Metadata.ExpireAt.After(time.Now()) {
 				color = tablewriter.FgYellowColor
 			} else {
