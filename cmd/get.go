@@ -6,7 +6,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
+	cli "github.com/urfave/cli/v2"
 
 	"github.com/mvisonneau/vac/lib/client"
 	"github.com/mvisonneau/vac/lib/state"

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/olekukonko/tablewriter"
-	"github.com/urfave/cli"
+	cli "github.com/urfave/cli/v2"
 	"github.com/xeonx/timeago"
 
 	"github.com/mvisonneau/vac/lib/client"
