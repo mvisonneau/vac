@@ -2,8 +2,10 @@ package state
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sort"
 
 	"github.com/mvisonneau/vac/lib/client"
@@ -27,11 +29,13 @@ func Read(filePath string) (*State, error) {
 	}
 
 	s := &State{}
-	byteValue, err := ioutil.ReadFile(filePath)
+	byteValue, err := ioutil.ReadFile(filepath.Clean(filePath))
 	if err != nil {
 		return &State{}, errors.Wrapf(err, "opening state file '%s'", filePath)
 	}
-	json.Unmarshal(byteValue, s)
+	if err := json.Unmarshal(byteValue, s); err != nil {
+		return nil, fmt.Errorf("error parsing vac state file: %w", err)
+	}
 	return s, nil
 }
 
