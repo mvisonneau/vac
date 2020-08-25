@@ -5,8 +5,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/mvisonneau/vac/cmd"
 	"github.com/urfave/cli"
+
+	"github.com/mvisonneau/vac/cmd"
 )
 
 // Run handles the instanciation of the CLI application

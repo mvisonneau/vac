@@ -8,8 +8,9 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/mvisonneau/vac/lib/client"
 	"github.com/pkg/errors"
+
+	"github.com/mvisonneau/vac/lib/client"
 )
 
 // State ..

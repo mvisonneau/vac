@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mvisonneau/vac/lib/client"
-	"github.com/mvisonneau/vac/lib/state"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+
+	"github.com/mvisonneau/vac/lib/client"
+	"github.com/mvisonneau/vac/lib/state"
 )
 
 // Output ..
