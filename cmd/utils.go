@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/hashicorp/vault/sdk/helper/mlock"
 	"github.com/mitchellh/go-homedir"
 	"github.com/mvisonneau/go-helpers/logger"
 	"github.com/pkg/errors"
@@ -57,9 +59,13 @@ func exit(exitCode int, err error) cli.ExitCoder {
 	return cli.NewExitError("", exitCode)
 }
 
-// ExecWrapper gracefully logs and exits our `run` functions
+// ExecWrapper mlocks the process memory (if supported) before our `run` functions,
+// and gracefully logs and exits afterwards.
 func ExecWrapper(f func(ctx *cli.Context) (int, error)) cli.ActionFunc {
 	return func(ctx *cli.Context) error {
+		if err := mlock.LockMemory(); err != nil {
+			return exit(1, fmt.Errorf("error locking vac memory: %w", err))
+		}
 		return exit(f(ctx))
 	}
 }
