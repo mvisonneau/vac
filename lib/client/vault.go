@@ -71,7 +71,7 @@ func (c *Client) ListAWSSecretEngines() (engines []string, err error) {
 
 // ListAWSSecretEngineRoles ..
 func (c *Client) ListAWSSecretEngineRoles(awsSecretEngine string) (roles []string, err error) {
-	foundRoles := &vault.Secret{}
+	var foundRoles *vault.Secret
 	foundRoles, err = c.Logical().List(fmt.Sprintf("/%s/roles", awsSecretEngine))
 	if err != nil {
 		return
@@ -90,7 +90,7 @@ func (c *Client) ListAWSSecretEngineRoles(awsSecretEngine string) (roles []strin
 
 // GenerateAWSCredentials ..
 func (c *Client) GenerateAWSCredentials(secretEngineName, secretEngineRole string, ttl time.Duration) (creds *AWSCredentials, err error) {
-	output := &vault.Secret{}
+	var output *vault.Secret
 	payload := make(map[string]interface{})
 	if ttl > 0 {
 		payload["ttl"] = ttl.Seconds()
