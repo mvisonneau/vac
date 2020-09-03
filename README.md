@@ -14,7 +14,7 @@ Written in golang, it can work on most common platforms (Linux, MacOS, Windows).
 
 It leverages the [external process sourcing](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sourcing-external.html) capabilities of the AWS CLI config definition.
 
-[![asciicast](https://asciinema.org/a/343653.svg)](https://asciinema.org/a/343653)
+[![asciicast](https://asciinema.org/a/343653.svg)](https://asciinema.org/a/343653?t=60)
 
 ## Install
 
