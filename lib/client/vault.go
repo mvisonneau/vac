@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -33,12 +34,14 @@ func getVaultClient() (*vault.Client, error) {
 		return nil, fmt.Errorf("VAULT_ADDR env is not defined")
 	}
 
-	c.SetAddress(os.Getenv("VAULT_ADDR"))
+	if err := c.SetAddress(os.Getenv("VAULT_ADDR")); err != nil {
+		return nil, fmt.Errorf("error settings vault client addr: %w", err)
+	}
 
 	token := os.Getenv("VAULT_TOKEN")
 	if len(token) == 0 {
 		home, _ := homedir.Dir()
-		f, err := ioutil.ReadFile(home + "/.vault-token")
+		f, err := ioutil.ReadFile(filepath.Clean(home + "/.vault-token"))
 		if err != nil {
 			return nil, fmt.Errorf("Vault token is not defined (VAULT_TOKEN or ~/.vault-token)")
 		}
@@ -68,7 +71,7 @@ func (c *Client) ListAWSSecretEngines() (engines []string, err error) {
 
 // ListAWSSecretEngineRoles ..
 func (c *Client) ListAWSSecretEngineRoles(awsSecretEngine string) (roles []string, err error) {
-	foundRoles := &vault.Secret{}
+	var foundRoles *vault.Secret
 	foundRoles, err = c.Logical().List(fmt.Sprintf("/%s/roles", awsSecretEngine))
 	if err != nil {
 		return
@@ -87,7 +90,7 @@ func (c *Client) ListAWSSecretEngineRoles(awsSecretEngine string) (roles []strin
 
 // GenerateAWSCredentials ..
 func (c *Client) GenerateAWSCredentials(secretEngineName, secretEngineRole string, ttl time.Duration) (creds *AWSCredentials, err error) {
-	output := &vault.Secret{}
+	var output *vault.Secret
 	payload := make(map[string]interface{})
 	if ttl > 0 {
 		payload["ttl"] = ttl.Seconds()

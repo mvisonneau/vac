@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/olekukonko/tablewriter"
+	cli "github.com/urfave/cli/v2"
+	"github.com/xeonx/timeago"
+
 	"github.com/mvisonneau/vac/lib/client"
 	"github.com/mvisonneau/vac/lib/state"
-	"github.com/olekukonko/tablewriter"
-	"github.com/urfave/cli"
-	"github.com/xeonx/timeago"
 )
 
 // Status ..

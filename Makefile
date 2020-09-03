@@ -14,13 +14,14 @@ setup: ## Install required libraries/tools for build tasks
 	@command -v ineffassign 2>&1 >/dev/null || GO111MODULE=off go get -u -v github.com/gordonklaus/ineffassign
 	@command -v misspell 2>&1 >/dev/null    || GO111MODULE=off go get -u -v github.com/client9/misspell/cmd/misspell
 	@command -v revive 2>&1 >/dev/null      || GO111MODULE=off go get -u -v github.com/mgechev/revive
+	@command -v gosec 2>&1 >/dev/null       || GO111MODULE=off go get -u -v go get github.com/securego/gosec/v2/cmd/gosec
 
 .PHONY: fmt
 fmt: setup ## Format source code
 	goimports -w $(FILES)
 
 .PHONY: lint
-lint: revive vet goimports ineffassign misspell ## Run all lint related tests against the codebase
+lint: revive vet goimports ineffassign misspell gosec ## Run all lint related tests against the codebase
 
 .PHONY: revive
 revive: setup ## Test code syntax with revive
@@ -42,6 +43,10 @@ ineffassign: setup ## Test code syntax for ineffassign
 .PHONY: misspell
 misspell: setup ## Test code with misspell
 	misspell -error $(FILES)
+
+.PHONY: gosec
+gosec: setup ## Test code for security vulnerabilities
+	gosec ./...
 
 .PHONY: test
 test: ## Run the tests against the codebase

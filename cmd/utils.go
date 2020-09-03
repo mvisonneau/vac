@@ -1,13 +1,15 @@
 package cmd
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/hashicorp/vault/sdk/helper/mlock"
 	"github.com/mitchellh/go-homedir"
 	"github.com/mvisonneau/go-helpers/logger"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
+	cli "github.com/urfave/cli/v2"
 )
 
 var start time.Time
@@ -23,27 +25,27 @@ func configure(ctx *cli.Context) (*Config, error) {
 	start = ctx.App.Metadata["startTime"].(time.Time)
 
 	lc := &logger.Config{
-		Level:  ctx.GlobalString("log-level"),
-		Format: ctx.GlobalString("log-format"),
+		Level:  ctx.String("log-level"),
+		Format: ctx.String("log-format"),
 	}
 
 	if err := lc.Configure(); err != nil {
 		return nil, errors.Wrap(err, "configuring logger")
 	}
 
-	statePath, err := homedir.Expand(ctx.GlobalString("state"))
+	statePath, err := homedir.Expand(ctx.String("state"))
 	if err != nil {
 		return nil, errors.Wrap(err, "expanding cache path value (go-homedir)")
 	}
 
 	return &Config{
-		Engine:    ctx.GlobalString("engine"),
-		Role:      ctx.GlobalString("role"),
+		Engine:    ctx.String("engine"),
+		Role:      ctx.String("role"),
 		StatePath: statePath,
 	}, nil
 }
 
-func exit(exitCode int, err error) *cli.ExitError {
+func exit(exitCode int, err error) cli.ExitCoder {
 	defer log.WithFields(
 		log.Fields{
 			"execution-time": time.Since(start),
@@ -57,9 +59,13 @@ func exit(exitCode int, err error) *cli.ExitError {
 	return cli.NewExitError("", exitCode)
 }
 
-// ExecWrapper gracefully logs and exits our `run` functions
-func ExecWrapper(f func(ctx *cli.Context) (int, error)) func(*cli.Context) error {
+// ExecWrapper mlocks the process memory (if supported) before our `run` functions,
+// and gracefully logs and exits afterwards.
+func ExecWrapper(f func(ctx *cli.Context) (int, error)) cli.ActionFunc {
 	return func(ctx *cli.Context) error {
+		if err := mlock.LockMemory(); err != nil {
+			return exit(1, fmt.Errorf("error locking vac memory: %w", err))
+		}
 		return exit(f(ctx))
 	}
 }
