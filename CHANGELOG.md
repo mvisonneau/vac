@@ -7,6 +7,22 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
+## [0.0.3] - 2020-09-03
+
+### Added
+
+- securego/gosec tests
+
+### Changed
+
+- Bumped golang to 1.15
+- Bumped goreleaser to 0.142.0
+- Bumped urfave/cli to v2
+
+### Removed
+
+- Dropped support for darwin/386
+
 ## [0.0.2] - 2020-06-29
 
 ### Added
