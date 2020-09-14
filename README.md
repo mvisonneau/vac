@@ -212,7 +212,7 @@ You can use the `status` command in order to retrieve some info about:
 | ClusterName | vault-cluster-90f72c95               |
 | Initialized | true                                 |
 | Sealed      | false                                |
-| Version     | 1.4.2                                |
+| Version     | 1.5.3                                |
 +-------------+--------------------------------------+
 ```
 
