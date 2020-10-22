@@ -7,6 +7,12 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
+### Changed
+
+- Refactored codebase following golang standard structure
+- Bumped all dependencies to their latest version
+- Bumped to go `1.15`
+
 ## [0.0.3] - 2020-09-03
 
 ### Added

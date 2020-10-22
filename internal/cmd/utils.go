@@ -24,12 +24,10 @@ type Config struct {
 func configure(ctx *cli.Context) (*Config, error) {
 	start = ctx.App.Metadata["startTime"].(time.Time)
 
-	lc := &logger.Config{
+	if err := logger.Configure(logger.Config{
 		Level:  ctx.String("log-level"),
 		Format: ctx.String("log-format"),
-	}
-
-	if err := lc.Configure(); err != nil {
+	}); err != nil {
 		return nil, errors.Wrap(err, "configuring logger")
 	}
 

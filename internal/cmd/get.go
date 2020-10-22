@@ -8,8 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
 
-	"github.com/mvisonneau/vac/lib/client"
-	"github.com/mvisonneau/vac/lib/state"
+	"github.com/mvisonneau/vac/pkg/client"
+	"github.com/mvisonneau/vac/pkg/state"
 )
 
 // Output ..
