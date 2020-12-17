@@ -41,9 +41,81 @@ scoop:
     owner: mvisonneau
     name: scoops
 
+dockers:
+  - image_templates:
+      - 'docker.io/mvisonneau/vac:{{ .Tag }}-amd64'
+      - 'ghcr.io/mvisonneau/vac:{{ .Tag }}-amd64'
+      - 'docker.io/mvisonneau/vac:latest-amd64'
+      - 'ghcr.io/mvisonneau/vac:latest-amd64'
+    binaries: [vac]
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - --build-arg=ARCH=amd64
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/mvisonneau/vac
+      - --label=org.opencontainers.image.source=https://github.com/mvisonneau/vac
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=Apache-2.0
+
+  - image_templates:
+      - 'docker.io/mvisonneau/vac:{{ .Tag }}-arm64v8'
+      - 'ghcr.io/mvisonneau/vac:{{ .Tag }}-arm64v8'
+      - 'docker.io/mvisonneau/vac:latest-arm64v8'
+      - 'ghcr.io/mvisonneau/vac:latest-arm64v8'
+    binaries: [vac]
+    goarch: arm64
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - --build-arg=ARCH=arm64v8
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/mvisonneau/vac
+      - --label=org.opencontainers.image.source=https://github.com/mvisonneau/vac
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=Apache-2.0
+
+docker_manifests:
+  - name_template: docker.io/mvisonneau/vac:{{ .Tag }}
+    image_templates:
+      - docker.io/mvisonneau/vac:{{ .Tag }}-amd64
+      - docker.io/mvisonneau/vac:{{ .Tag }}-arm64v8
+
+  - name_template: ghcr.io/mvisonneau/vac:{{ .Tag }}
+    image_templates:
+      - ghcr.io/mvisonneau/vac:{{ .Tag }}-amd64
+      - ghcr.io/mvisonneau/vac:{{ .Tag }}-arm64v8
+
+  - name_template: docker.io/mvisonneau/vac:latest
+    image_templates:
+      - docker.io/mvisonneau/vac:latest-amd64
+      - docker.io/mvisonneau/vac:latest-arm64v8
+
+  - name_template: ghcr.io/mvisonneau/vac:latest
+    image_templates:
+      # It doesn't work if we point it to the latest tags..
+      - ghcr.io/mvisonneau/vac:{{ .Tag }}-amd64
+      - ghcr.io/mvisonneau/vac:{{ .Tag }}-arm64v8
+
 checksum:
-  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
-  algorithm: sha256
+  name_template: '{{ .ProjectName }}_{{ .Tag }}_sha512sums.txt'
+  algorithm: sha512
+
+signs:
+  - artifacts: checksum
+    args:
+      [
+        '-u',
+        'C09CA9F71C5C988E65E3E5FCADEA38EDC46F25BE',
+        '--output',
+        '${signature}',
+        '--detach-sign',
+        '${artifact}',
+      ]
 
 snapshot:
   name_template: '{{ .Tag }}-{{ .ShortCommit }}'

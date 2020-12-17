@@ -7,6 +7,17 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
+### Added
+
+- Release GitHub container registry based images: [ghcr.io/mvisonneau/vac](https://github.com/users/mvisonneau/packages/container/package/vac)
+- Release `arm64v8` based container images as part of docker manifests in both **docker.io** and **ghcr.io**
+- GPG sign released artifacts checksums
+
+### Changed
+
+- Updated all dependencies
+- Migrated CI from Drone to GitHub actions
+
 ## [0.0.4] - 2020-10-22
 
 ### Changed

@@ -3,7 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/mvisonneau/vac?status.svg)](https://godoc.org/github.com/mvisonneau/vac/app)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mvisonneau/vac)](https://goreportcard.com/report/github.com/mvisonneau/vac)
 [![Docker Pulls](https://img.shields.io/docker/pulls/mvisonneau/vac.svg)](https://hub.docker.com/r/mvisonneau/vac/)
-[![Build Status](https://cloud.drone.io/api/badges/mvisonneau/vac/status.svg)](https://cloud.drone.io/mvisonneau/vac)
+[![Build Status](https://github.com/mvisonneau/vac/workflows/test/badge.svg?branch=main)](https://github.com/mvisonneau/vac/actions)
 [![Coverage Status](https://coveralls.io/repos/github/mvisonneau/vac/badge.svg?branch=master)](https://coveralls.io/github/mvisonneau/vac?branch=master)
 
 `vac` is a wrapper to manage AWS credentials dynamically using [Hashicorp Vault](https://www.vaultproject.io/).
@@ -17,6 +17,10 @@ It leverages the [external process sourcing](https://docs.aws.amazon.com/cli/lat
 [![asciicast](https://asciinema.org/a/343653.svg)](https://asciinema.org/a/343653?t=60)
 
 ## Install
+
+Have a look onto the [latest release page](https://github.com/mvisonneau/vac/releases/latest) and pick your flavor.
+
+Checksums are signed with the [following GPG key](https://keybase.io/mvisonneau/pgp_keys.asc): `C09C A9F7 1C5C 988E 65E3  E5FC ADEA 38ED C46F 25BE`
 
 ### Go
 
@@ -33,7 +37,9 @@ It leverages the [external process sourcing](https://docs.aws.amazon.com/cli/lat
 ### Docker
 
 ```bash
-~$ docker run -it --rm mvisonneau/vac
+~$ docker run -it --rm docker.io/mvisonneau/vac
+or
+~$ docker run -it --rm ghcr.io/mvisonneau/vac
 ```
 
 ### Scoop
@@ -120,7 +126,7 @@ GLOBAL OPTIONS:
 
 You are forced to use the fuzzyfinding capabilities. This is particularily useful in a non-TTY usage scenario. eg:
 
-```
+```toml
 # ~/.aws/credentials
 [default]
 credential_process = /usr/local/bin/vac get
@@ -132,7 +138,7 @@ credential_process = /usr/local/bin/vac -e staging -r admin get
 
 You can also dynamically switch your context without a prompt by doing the following:
 
-```shell
+```bash
 # only prompt for chosing a role in the "dev" engine
 ~$ vac -e dev
 
@@ -144,7 +150,7 @@ You can also dynamically switch your context without a prompt by doing the follo
 
 The `get` command can take various flags in order to manage the credentials TTLs but also when to refresh them:
 
-```
+```bash
 ~$ vac get --help
 NAME:
    vac get - get the creds in credential_process format (json)
