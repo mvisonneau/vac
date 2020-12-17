@@ -7,6 +7,8 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
+## [v0.0.5] - 2020-12-17
+
 ### Added
 
 - Release GitHub container registry based images: [ghcr.io/mvisonneau/vac](https://github.com/users/mvisonneau/packages/container/package/vac)
@@ -15,6 +17,7 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ### Changed
 
+- Prefix new releases with `^v` to make `pkg.go.dev` happy
 - Updated all dependencies
 - Migrated CI from Drone to GitHub actions
 
@@ -64,7 +67,8 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 - LICENSE
 - README
 
-[Unreleased]: https://github.com/mvisonneau/vac/compare/0.0.4...HEAD
+[Unreleased]: https://github.com/mvisonneau/vac/compare/v0.0.5...HEAD
+[v0.0.5]: https://github.com/mvisonneau/vac/tree/v0.0.5
 [0.0.4]: https://github.com/mvisonneau/vac/tree/0.0.4
 [0.0.3]: https://github.com/mvisonneau/vac/tree/0.0.3
 [0.0.2]: https://github.com/mvisonneau/vac/tree/0.0.2
