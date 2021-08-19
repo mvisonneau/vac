@@ -7,10 +7,12 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
+## [v0.0.6] - 2021-08-19
+
 ### Changed
 
 - Generate pre-releases on default branch pushes
-- Bumped go from 1.15 to 1.17
+- Bumped go from **1.15** to **1.17**
 - Updated all dependencies to their latest versions
 - Release npm/deb packages correctly
 - Add support for Apple M1 silicon
