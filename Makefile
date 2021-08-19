@@ -63,7 +63,6 @@ build: ## Build the binaries using local GOOS
 release: ## Build & release the binaries (stable)
 	git tag -d edge
 	goreleaser release --rm-dist
-	find dist -type f -name "*.snap" -exec snapcraft upload --release stable,edge '{}' \;
 
 .PHONY: prerelease
 prerelease: setup ## Build & prerelease the binaries (edge)
