@@ -49,23 +49,29 @@ gosec: setup ## Test code for security vulnerabilities
 
 .PHONY: test
 test: ## Run the tests against the codebase
-	go test -v -race ./...
+	go test -v -count=1 -race ./...
 
 .PHONY: install
 install: ## Build and install locally the binary (dev purpose)
 	go install ./cmd/$(NAME)
 
-.PHONY: build-local
-build-local: ## Build the binaries using local GOOS
+.PHONY: build
+build: ## Build the binaries using local GOOS
 	go build ./cmd/$(NAME)
 
-.PHONY: build
-build: ## Build the binaries
-	goreleaser release --snapshot --skip-publish --rm-dist
-
 .PHONY: release
-release: ## Build & release the binaries
+release: ## Build & release the binaries (stable)
+	git tag -d edge
 	goreleaser release --rm-dist
+	find dist -type f -name "*.snap" -exec snapcraft upload --release stable,edge '{}' \;
+
+.PHONY: prerelease
+prerelease: setup ## Build & prerelease the binaries (edge)
+	@\
+		REPOSITORY=$(REPOSITORY) \
+		NAME=$(NAME) \
+		GITHUB_TOKEN=$(GITHUB_TOKEN) \
+		.github/prerelease.sh
 
 .PHONY: clean
 clean: ## Remove binary if it exists
@@ -74,7 +80,11 @@ clean: ## Remove binary if it exists
 .PHONY: coverage
 coverage: ## Generates coverage report
 	rm -rf *.out
-	go test -v ./... -coverpkg=./... -coverprofile=coverage.out
+	go test -count=1 -race -v ./... -coverpkg=./... -coverprofile=coverage.out
+
+.PHONY: coverage-html
+coverage-html: ## Generates coverage report and displays it in the browser
+	go tool cover -html=coverage.out
 
 .PHONY: dev-env
 dev-env: ## Build a local development environment using Docker
