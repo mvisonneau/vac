@@ -21,42 +21,18 @@ builds:
         goarch: 386
 
 archives:
-  - name_template: '{{ .ProjectName }}_{{ .Tag }}_{{ .Os }}_{{ .Arch }}'
+  - name_template: '{{ .ProjectName }}_edge_{{ .Os }}_{{ .Arch }}'
     format_overrides:
       - goos: windows
         format: zip
 
-nfpms:
-  - maintainer: &author Maxime VISONNEAU <maxime.visonneau@gmail.com>
-    description: &description VAC - Vault AWS Credentials Manager
-    license: &license Apache-2.0
-    homepage: &homepage https://github.com/mvisonneau/vac
-    vendor: *author
-    file_name_template: '{{ .ProjectName }}_{{ .Tag }}_{{ .Os }}_{{ .Arch }}'
-    formats:
-      - deb
-      - rpm
-
-brews:
-  - description: *description
-    homepage: *homepage
-    folder: Formula
-    tap:
-      owner: mvisonneau
-      name: homebrew-tap
-
-scoop:
-  description: *description
-  homepage: *homepage
-  license: *license
-  bucket:
-    owner: mvisonneau
-    name: scoops
+release:
+  disable: true
 
 dockers:
   - image_templates:
-      - 'docker.io/mvisonneau/vac:{{ .Tag }}-amd64'
-      - 'ghcr.io/mvisonneau/vac:{{ .Tag }}-amd64'
+      - 'docker.io/mvisonneau/vac:latest-amd64'
+      - 'ghcr.io/mvisonneau/vac:latest-amd64'
     ids: [vac]
     goarch: amd64
     use_buildx: true
@@ -72,8 +48,8 @@ dockers:
       - --label=org.opencontainers.image.licenses=Apache-2.0
 
   - image_templates:
-      - 'docker.io/mvisonneau/vac:{{ .Tag }}-arm64v8'
-      - 'ghcr.io/mvisonneau/vac:{{ .Tag }}-arm64v8'
+      - 'docker.io/mvisonneau/vac:latest-arm64v8'
+      - 'ghcr.io/mvisonneau/vac:latest-arm64v8'
     ids: [vac]
     goarch: arm64
     use_buildx: true
@@ -89,19 +65,15 @@ dockers:
       - --label=org.opencontainers.image.licenses=Apache-2.0
 
 docker_manifests:
-  - name_template: docker.io/mvisonneau/vac:{{ .Tag }}
+  - name_template: docker.io/mvisonneau/vac:latest
     image_templates:
-      - docker.io/mvisonneau/vac:{{ .Tag }}-amd64
-      - docker.io/mvisonneau/vac:{{ .Tag }}-arm64v8
+      - docker.io/mvisonneau/vac:latest-amd64
+      - docker.io/mvisonneau/vac:latest-arm64v8
 
-  - name_template: ghcr.io/mvisonneau/vac:{{ .Tag }}
+  - name_template: ghcr.io/mvisonneau/vac:latest
     image_templates:
-      - ghcr.io/mvisonneau/vac:{{ .Tag }}-amd64
-      - ghcr.io/mvisonneau/vac:{{ .Tag }}-arm64v8
-
-checksum:
-  name_template: '{{ .ProjectName }}_{{ .Tag }}_sha512sums.txt'
-  algorithm: sha512
+      - ghcr.io/mvisonneau/vac:latest-amd64
+      - ghcr.io/mvisonneau/vac:latest-arm64v8
 
 signs:
   - artifacts: checksum
@@ -114,6 +86,10 @@ signs:
         '--detach-sign',
         '${artifact}',
       ]
+
+checksum:
+  name_template: '{{ .ProjectName }}_edge_sha512sums.txt'
+  algorithm: sha512
 
 changelog:
   skip: true
