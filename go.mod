@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/hashicorp/vault/api v1.1.1
 	github.com/hashicorp/vault/sdk v0.2.1
-	github.com/ktr0731/go-fuzzyfinder v0.4.0
+	github.com/ktr0731/go-fuzzyfinder v0.5.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mvisonneau/go-helpers v0.0.1
 	github.com/olekukonko/tablewriter v0.0.5
