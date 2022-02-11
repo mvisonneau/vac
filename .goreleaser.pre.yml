@@ -33,8 +33,9 @@ release:
 
 dockers:
   - image_templates:
-      - 'docker.io/mvisonneau/vac:latest-amd64'
-      - 'ghcr.io/mvisonneau/vac:latest-amd64'
+      - docker.io/mvisonneau/vac:latest-amd64
+      - ghcr.io/mvisonneau/vac:latest-amd64
+      - quay.io/mvisonneau/vac:latest-amd64
     ids: [vac]
     goarch: amd64
     use: buildx
@@ -50,13 +51,14 @@ dockers:
       - --label=org.opencontainers.image.licenses=Apache-2.0
 
   - image_templates:
-      - 'docker.io/mvisonneau/vac:latest-arm64v8'
-      - 'ghcr.io/mvisonneau/vac:latest-arm64v8'
+      - docker.io/mvisonneau/vac:latest-arm64
+      - ghcr.io/mvisonneau/vac:latest-arm64
+      - quay.io/mvisonneau/vac:latest-arm64
     ids: [vac]
     goarch: arm64
     use: buildx
     build_flag_templates:
-      - --platform=linux/arm64/v8
+      - --platform=linux/arm64
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.description={{ .ProjectName }}
       - --label=org.opencontainers.image.url=https://github.com/mvisonneau/vac
@@ -70,12 +72,17 @@ docker_manifests:
   - name_template: docker.io/mvisonneau/vac:latest
     image_templates:
       - docker.io/mvisonneau/vac:latest-amd64
-      - docker.io/mvisonneau/vac:latest-arm64v8
+      - docker.io/mvisonneau/vac:latest-arm64
 
   - name_template: ghcr.io/mvisonneau/vac:latest
     image_templates:
       - ghcr.io/mvisonneau/vac:latest-amd64
-      - ghcr.io/mvisonneau/vac:latest-arm64v8
+      - ghcr.io/mvisonneau/vac:latest-arm64
+
+  - name_template: quay.io/mvisonneau/vac:latest
+    image_templates:
+      - quay.io/mvisonneau/vac:latest-amd64
+      - quay.io/mvisonneau/vac:latest-arm64
 
 signs:
   - artifacts: checksum

@@ -25,7 +25,7 @@ Checksums are signed with the [following GPG key](https://keybase.io/mvisonneau/
 ### Go
 
 ```bash
-~$ go get -u github.com/mvisonneau/vac
+~$ go install github.com/mvisonneau/vac/cmd/vac@latest
 ```
 
 ### Homebrew
@@ -38,8 +38,8 @@ Checksums are signed with the [following GPG key](https://keybase.io/mvisonneau/
 
 ```bash
 ~$ docker run -it --rm docker.io/mvisonneau/vac
-or
 ~$ docker run -it --rm ghcr.io/mvisonneau/vac
+~$ docker run -it --rm quay.io/mvisonneau/vac
 ```
 
 ### Scoop

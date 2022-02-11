@@ -7,6 +7,15 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
+## [v0.0.7] - 2021-02-11
+
+### Added
+
+- Released container images over `quay.io`
+### Changed
+
+- Bumped all dependencies
+
 ## [v0.0.6] - 2021-08-19
 
 ### Changed
@@ -77,7 +86,9 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 - LICENSE
 - README
 
-[Unreleased]: https://github.com/mvisonneau/vac/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/mvisonneau/vac/compare/v0.0.7...HEAD
+[v0.0.7]: https://github.com/mvisonneau/vac/tree/v0.0.7
+[v0.0.6]: https://github.com/mvisonneau/vac/tree/v0.0.6
 [v0.0.5]: https://github.com/mvisonneau/vac/tree/v0.0.5
 [0.0.4]: https://github.com/mvisonneau/vac/tree/0.0.4
 [0.0.3]: https://github.com/mvisonneau/vac/tree/0.0.3
