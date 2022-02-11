@@ -1,10 +1,10 @@
 # vac | AWS credentials management leveraging Vault
 
-[![GoDoc](https://godoc.org/github.com/mvisonneau/vac?status.svg)](https://godoc.org/github.com/mvisonneau/vac/app)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/mvisonneau/vac)](https://pkg.go.dev/mod/github.com/mvisonneau/vac)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mvisonneau/vac)](https://goreportcard.com/report/github.com/mvisonneau/vac)
-[![Docker Pulls](https://img.shields.io/docker/pulls/mvisonneau/vac.svg)](https://hub.docker.com/r/mvisonneau/vac/)
-[![Build Status](https://github.com/mvisonneau/vac/workflows/test/badge.svg?branch=main)](https://github.com/mvisonneau/vac/actions)
-[![Coverage Status](https://coveralls.io/repos/github/mvisonneau/vac/badge.svg?branch=master)](https://coveralls.io/github/mvisonneau/vac?branch=master)
+[![test](https://github.com/mvisonneau/vac/actions/workflows/test.yml/badge.svg)](https://github.com/mvisonneau/vac/actions/workflows/test.yml)
+[![Coverage Status](https://coveralls.io/repos/github/mvisonneau/vac/badge.svg?branch=main)](https://coveralls.io/github/mvisonneau/vac?branch=main)
+[![release](https://github.com/mvisonneau/vac/actions/workflows/release.yml/badge.svg)](https://github.com/mvisonneau/vac/actions/workflows/release.yml)
 
 `vac` is a wrapper to manage AWS credentials dynamically using [Hashicorp Vault](https://www.vaultproject.io/).
 
