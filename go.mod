@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/hashicorp/vault/api v1.3.1
-	github.com/hashicorp/vault/sdk v0.3.0
+	github.com/hashicorp/vault/sdk v0.4.1
 	github.com/ktr0731/go-fuzzyfinder v0.5.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mvisonneau/go-helpers v0.0.1
