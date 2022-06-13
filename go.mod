@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/hashicorp/vault/api v1.3.1
-	github.com/hashicorp/vault/sdk v0.3.0
+	github.com/hashicorp/vault/sdk v0.5.1
 	github.com/ktr0731/go-fuzzyfinder v0.5.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mvisonneau/go-helpers v0.0.1
@@ -36,7 +36,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.0 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
 	github.com/hashicorp/go-secure-stdlib/mlock v0.1.2 // indirect
-	github.com/hashicorp/go-secure-stdlib/parseutil v0.1.2 // indirect
+	github.com/hashicorp/go-secure-stdlib/parseutil v0.1.6 // indirect
 	github.com/hashicorp/go-secure-stdlib/strutil v0.1.2 // indirect
 	github.com/hashicorp/go-sockaddr v1.0.2 // indirect
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
@@ -50,7 +50,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
-	github.com/mitchellh/mapstructure v1.4.3 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/nsf/termbox-go v1.1.1 // indirect
 	github.com/oklog/run v1.1.0 // indirect
