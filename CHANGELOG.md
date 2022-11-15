@@ -7,6 +7,17 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
+## [v0.0.8] - 2021-02-11
+
+### Added
+
+- Support for tokens containing a trailing `\n`
+
+### Changed
+
+- Golang updated to `1.19`
+- Bumped all dependencies
+  
 ## [v0.0.7] - 2021-02-11
 
 ### Added
