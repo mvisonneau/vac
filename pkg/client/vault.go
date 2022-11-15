@@ -46,7 +46,9 @@ func getVaultClient() (*vault.Client, error) {
 			return nil, fmt.Errorf("Vault token is not defined (VAULT_TOKEN or ~/.vault-token)")
 		}
 
-		token = string(f)
+		// The vault client does not handle a trailing newline, so we ensure it
+		// has been removed
+		token = strings.TrimSuffix(string(f), "\n")
 	}
 
 	c.SetToken(token)
