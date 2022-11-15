@@ -7,7 +7,7 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 
 ## [Unreleased]
 
-## [v0.0.8] - 2021-02-11
+## [v0.0.8] - 2021-11-15
 
 ### Added
 
@@ -97,7 +97,8 @@ and this project adheres to [0ver](https://0ver.org) (more or less).
 - LICENSE
 - README
 
-[Unreleased]: https://github.com/mvisonneau/vac/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/mvisonneau/vac/compare/v0.0.8...HEAD
+[v0.0.8]: https://github.com/mvisonneau/vac/tree/v0.0.8
 [v0.0.7]: https://github.com/mvisonneau/vac/tree/v0.0.7
 [v0.0.6]: https://github.com/mvisonneau/vac/tree/v0.0.6
 [v0.0.5]: https://github.com/mvisonneau/vac/tree/v0.0.5
