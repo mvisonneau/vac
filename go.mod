@@ -3,8 +3,8 @@ module github.com/mvisonneau/vac
 go 1.19
 
 require (
-	github.com/hashicorp/vault/api v1.8.2
-	github.com/hashicorp/vault/sdk v0.6.1
+	github.com/hashicorp/vault/api v1.8.3
+	github.com/hashicorp/vault/sdk v0.7.0
 	github.com/ktr0731/go-fuzzyfinder v0.5.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mvisonneau/go-helpers v0.0.1
