@@ -22,7 +22,13 @@ lint: ## Run all lint related tests upon the codebase
 
 .PHONY: test
 test: ## Run the tests against the codebase
-	go test -v -count=1 -race ./...
+	@rm -rf $(COVERAGE_FILE)
+	go test -v -count=1 -race ./... -coverprofile=$(COVERAGE_FILE)
+	@go tool cover -func $(COVERAGE_FILE) | awk '/^total/ {print "coverage: " $$3}'
+
+.PHONY: coverage
+coverage: ## Prints coverage report
+	go tool cover -func $(COVERAGE_FILE)
 
 .PHONY: install
 install: ## Build and install locally the binary (dev purpose)
