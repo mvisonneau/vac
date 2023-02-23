@@ -24,7 +24,7 @@ trap cleanup EXIT
 # Build the binaries using a prerelease tag
 git tag -d edge
 git tag -f ${PRERELEASE_TAG}
-goreleaser release \
+go run github.com/goreleaser/goreleaser@v1.15.2 release \
     --rm-dist \
     --skip-validate \
     -f .goreleaser.pre.yml

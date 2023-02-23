@@ -1,24 +1,26 @@
 NAME          := vac
-FILES         := $(shell git ls-files */*.go)
+COVERAGE_FILE := coverage.out
 REPOSITORY    := mvisonneau/$(NAME)
 .DEFAULT_GOAL := help
 
-.PHONY: setup
-setup: ## Install required libraries/tools for build tasks
-	@command -v gofumpt 2>&1 >/dev/null       || go install mvdan.cc/gofumpt@v0.3.1
-	@command -v golangci-lint 2>&1 >/dev/null || go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.45.2
-
 .PHONY: fmt
-fmt: setup ## Format source code
-	gofumpt -w $(FILES)
+fmt: ## Format source code
+	go run mvdan.cc/gofumpt@v0.4.0 -w $(shell git ls-files **/*.go)
+	go run github.com/daixiang0/gci@v0.9.1 write -s standard -s default -s "prefix(github.com/mvisonneau)" .
 
 .PHONY: lint
-lint: setup ## Run all lint related tests upon the codebase
-	golangci-lint run -v --fast
+lint: ## Run all lint related tests upon the codebase
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.1 run -v --fast
 
 .PHONY: test
 test: ## Run the tests against the codebase
-	go test -v -count=1 -race ./...
+	@rm -rf $(COVERAGE_FILE)
+	go test -v -count=1 -race ./... -coverprofile=$(COVERAGE_FILE)
+	@go tool cover -func $(COVERAGE_FILE) | awk '/^total/ {print "coverage: " $$3}'
+
+.PHONY: coverage
+coverage: ## Prints coverage report
+	go tool cover -func $(COVERAGE_FILE)
 
 .PHONY: install
 install: ## Build and install locally the binary (dev purpose)
@@ -27,11 +29,6 @@ install: ## Build and install locally the binary (dev purpose)
 .PHONY: build
 build: ## Build the binaries using local GOOS
 	go build ./cmd/$(NAME)
-
-.PHONY: release
-release: ## Build & release the binaries (stable)
-	git tag -d edge
-	goreleaser release --rm-dist
 
 .PHONY: prerelease
 prerelease: setup ## Build & prerelease the binaries (edge)
@@ -44,28 +41,6 @@ prerelease: setup ## Build & prerelease the binaries (edge)
 .PHONY: clean
 clean: ## Remove binary if it exists
 	rm -f $(NAME)
-
-.PHONY: coverage
-coverage: ## Generates coverage report
-	rm -rf *.out
-	go test -count=1 -race -v ./... -coverpkg=./... -coverprofile=coverage.out
-
-.PHONY: coverage-html
-coverage-html: ## Generates coverage report and displays it in the browser
-	go tool cover -html=coverage.out
-
-.PHONY: dev-env
-dev-env: ## Build a local development environment using Docker
-	@docker run -it --rm \
-		-v $(shell pwd):/go/src/github.com/mvisonneau/$(NAME) \
-		-w /go/src/github.com/mvisonneau/$(NAME) \
-		golang:1.19 \
-		/bin/bash -c 'make setup; make install; bash'
-
-.PHONY: is-git-dirty
-is-git-dirty: ## Tests if git is in a dirty state
-	@git status --porcelain
-	@test $(shell git status --porcelain | grep -c .) -eq 0
 
 .PHONY: all
 all: lint test build coverage ## Test, builds and ship package for all supported platforms

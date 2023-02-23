@@ -1,0 +1,20 @@
+
+linters:
+  enable:
+    - gci
+    - gofmt
+    - goimports
+    - gosec
+    - loggercheck
+    - misspell
+    - nilerr
+    - nilnil
+    - noctx
+    - unparam
+
+linters-settings:
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/mvisonneau)

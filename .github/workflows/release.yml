@@ -10,7 +10,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     env:
       DOCKER_CLI_EXPERIMENTAL: 'enabled'
@@ -51,7 +51,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.19
+          go-version: 1.20
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v3
@@ -62,7 +62,7 @@ jobs:
       - name: Install goreleaser
         uses: goreleaser/goreleaser-action@v2
         with:
-          version: v1.12.3
+          version: v1.15.2
           install-only: true
 
       - name: Run goreleaser

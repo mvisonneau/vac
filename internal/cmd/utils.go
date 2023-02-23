@@ -6,10 +6,11 @@ import (
 
 	"github.com/hashicorp/vault/sdk/helper/mlock"
 	"github.com/mitchellh/go-homedir"
-	"github.com/mvisonneau/go-helpers/logger"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
+
+	"github.com/mvisonneau/go-helpers/logger"
 )
 
 var start time.Time
