@@ -13,6 +13,7 @@ import (
 
 	"github.com/mvisonneau/go-helpers/logger"
 	"github.com/mvisonneau/vac/internal/cli/flags"
+	"github.com/mvisonneau/vac/pkg/client"
 )
 
 var start time.Time
@@ -23,6 +24,8 @@ type Config struct {
 	Role      string
 	StatePath string
 	LockPath  string
+
+	AuthInfo client.AuthInfo
 }
 
 func configure(ctx *cli.Context) (*Config, error) {
@@ -45,6 +48,11 @@ func configure(ctx *cli.Context) (*Config, error) {
 		Role:      flags.Role.Get(ctx),
 		StatePath: statePath,
 		LockPath:  fmt.Sprintf("%s.lock", statePath),
+
+		AuthInfo: client.AuthInfo{
+			Method:   ctx.String("auth"),
+			RoleName: ctx.String("auth-k8s-role"),
+		},
 	}, nil
 }
 
