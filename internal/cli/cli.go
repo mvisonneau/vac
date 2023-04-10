@@ -59,6 +59,17 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 			Usage:   "log `format` (json,text)",
 			Value:   "text",
 		},
+		&cli.StringFlag{
+			Name:    "auth",
+			EnvVars: []string{"VAC_AUTH"},
+			Usage:   "auth method (token, kubernetes)",
+			Value:   "token",
+		},
+		&cli.StringFlag{
+			Name:    "auth-k8s-role",
+			EnvVars: []string{"VAC_AUTH_K8S_ROLE"},
+			Usage:   "Kubernetes role to authenticate to (for --auth kubernetes)",
+		},
 	}
 
 	app.Action = cmd.ExecWrapper(cmd.Switch)
