@@ -73,4 +73,11 @@ var (
 		EnvVars: []string{"VAC_AUTH_K8S_ROLE"},
 		Usage:   "Kubernetes role to authenticate to (for --auth kubernetes)",
 	}
+
+	AuthK8sMount = &cli.StringFlag{
+		Name:    "auth-k8s-mount",
+		EnvVars: []string{"VAC_AUTH_K8S_MOUNT"},
+		Usage:   "Kubernetes auth mount path (for --auth kubernetes)",
+		Value:   "kubernetes",
+	}
 )

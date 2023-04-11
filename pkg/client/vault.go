@@ -45,13 +45,14 @@ func getVaultClient() (*vault.Client, error) {
 type AuthInfo struct {
 	Method string
 
-	RoleName string
+	MountPath string
+	RoleName  string
 }
 
 func (c *Client) Authenticate(info AuthInfo) error {
 	switch info.Method {
 	case "kubernetes":
-		authMethod, err := k8sauth.NewKubernetesAuth(info.RoleName)
+		authMethod, err := k8sauth.NewKubernetesAuth(info.RoleName, k8sauth.WithMountPath(info.MountPath))
 		if err != nil {
 			return err
 		}
