@@ -122,6 +122,7 @@ GLOBAL OPTIONS:
    --log-format format     log format (json,text) (default: "text") [$VAC_LOG_FORMAT]
    --auth value            auth method (token, kubernetes) (default: "token") [$VAC_AUTH]
    --auth-k8s-role value   Kubernetes role to authenticate to (for --auth kubernetes) [$VAC_AUTH_K8S_ROLE]
+   --auth-k8s-mount value  Kubernetes auth mount path (for --auth kubernetes) (default: "kubernetes") [$VAC_AUTH_K8S_MOUNT]
    --help, -h              show help
 ```
 
