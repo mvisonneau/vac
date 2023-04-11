@@ -1,14 +1,15 @@
 package client
 
 import (
+	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	vault "github.com/hashicorp/vault/api"
+	k8sauth "github.com/hashicorp/vault/api/auth/kubernetes"
 	"github.com/mitchellh/go-homedir"
 )
 
@@ -38,22 +39,47 @@ func getVaultClient() (*vault.Client, error) {
 		return nil, fmt.Errorf("error settings vault client addr: %w", err)
 	}
 
-	token := os.Getenv("VAULT_TOKEN")
-	if len(token) == 0 {
-		home, _ := homedir.Dir()
-		f, err := ioutil.ReadFile(filepath.Clean(home + "/.vault-token"))
+	return c, nil
+}
+
+type AuthInfo struct {
+	Method string
+
+	MountPath string
+	RoleName  string
+}
+
+func (c *Client) Authenticate(info AuthInfo) error {
+	switch info.Method {
+	case "kubernetes":
+		authMethod, err := k8sauth.NewKubernetesAuth(info.RoleName, k8sauth.WithMountPath(info.MountPath))
 		if err != nil {
-			return nil, fmt.Errorf("Vault token is not defined (VAULT_TOKEN or ~/.vault-token)")
+			return err
+		}
+		_, err = c.Auth().Login(context.Background(), authMethod)
+		if err != nil {
+			return err
+		}
+		return nil
+	case "token", "":
+		// Vault SDK automatically handle the envars
+		if c.Token() == "" {
+			home, _ := homedir.Dir()
+			f, err := os.ReadFile(filepath.Clean(home + "/.vault-token"))
+			if err != nil {
+				return fmt.Errorf("Vault token is not defined (%s or ~/.vault-token)", vault.EnvVaultToken)
+			}
+
+			// The vault client does not handle a trailing newline, so we ensure it
+			// has been removed
+			token := strings.TrimSuffix(string(f), "\n")
+			c.SetToken(token)
 		}
 
-		// The vault client does not handle a trailing newline, so we ensure it
-		// has been removed
-		token = strings.TrimSuffix(string(f), "\n")
+		return nil
+	default:
+		return fmt.Errorf("unknown Vault authentication method '%s'", info.Method)
 	}
-
-	c.SetToken(token)
-
-	return c, nil
 }
 
 // ListAWSSecretEngines ..

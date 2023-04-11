@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/mvisonneau/vac/pkg/client"
 	"time"
 
-	"github.com/hashicorp/vault/sdk/helper/mlock"
+	"github.com/hashicorp/go-secure-stdlib/mlock"
 	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -20,6 +21,8 @@ type Config struct {
 	Engine    string
 	Role      string
 	StatePath string
+
+	AuthInfo client.AuthInfo
 }
 
 func configure(ctx *cli.Context) (*Config, error) {
@@ -41,6 +44,12 @@ func configure(ctx *cli.Context) (*Config, error) {
 		Engine:    ctx.String("engine"),
 		Role:      ctx.String("role"),
 		StatePath: statePath,
+
+		AuthInfo: client.AuthInfo{
+			Method:    ctx.String("auth"),
+			MountPath: ctx.String("auth-k8s-mount"),
+			RoleName:  ctx.String("auth-k8s-role"),
+		},
 	}, nil
 }
 
