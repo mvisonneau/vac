@@ -328,9 +328,7 @@ func getVaultClient(authConfig *AuthConfig) (*vault.Client, error) {
 		//// has been removed
 		//token = strings.TrimSuffix(string(f), "\n")
 	} else {
-		if secret != nil {
-			token = secret.Auth.ClientToken
-		}
+		token = secret.Auth.ClientToken
 	}
 
 	client.SetToken(token)
