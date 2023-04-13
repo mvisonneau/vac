@@ -48,7 +48,7 @@ func Get(ctx *cli.Context) (int, error) {
 		return 1, fmt.Errorf("'min-ttl' cannot be longer than 'ttl'")
 	}
 
-	vac, err := client.New()
+	vac, err := client.New(cfg.AuthConfig)
 	if err != nil {
 		return 1, err
 	}

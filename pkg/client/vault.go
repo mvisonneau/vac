@@ -2,15 +2,36 @@ package client
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
+	"github.com/mvisonneau/vac/internal/base"
+	"github.com/mvisonneau/vac/pkg/auth/write"
 	"strings"
 	"time"
 
 	vault "github.com/hashicorp/vault/api"
-	"github.com/mitchellh/go-homedir"
+	vaultCommand "github.com/hashicorp/vault/command"
+
+	credAliCloud "github.com/hashicorp/vault-plugin-auth-alicloud"
+	credCentrify "github.com/hashicorp/vault-plugin-auth-centrify"
+	credCF "github.com/hashicorp/vault-plugin-auth-cf"
+	credGcp "github.com/hashicorp/vault-plugin-auth-gcp/plugin"
+	credOIDC "github.com/hashicorp/vault-plugin-auth-jwt"
+	credKerb "github.com/hashicorp/vault-plugin-auth-kerberos"
+	credOCI "github.com/hashicorp/vault-plugin-auth-oci"
+	credAws "github.com/hashicorp/vault/builtin/credential/aws"
+	credCert "github.com/hashicorp/vault/builtin/credential/cert"
+	credGitHub "github.com/hashicorp/vault/builtin/credential/github"
+	credLdap "github.com/hashicorp/vault/builtin/credential/ldap"
+	credOkta "github.com/hashicorp/vault/builtin/credential/okta"
+	credToken "github.com/hashicorp/vault/builtin/credential/token"
+	credUserpass "github.com/hashicorp/vault/builtin/credential/userpass"
 )
+
+type AuthConfig struct {
+	AuthMethod     string
+	AuthPath       string
+	AuthNoStore    bool
+	AuthMethodArgs map[string]string
+}
 
 // AWSCredentials ..
 type AWSCredentials struct {
@@ -23,37 +44,298 @@ type AWSCredentials struct {
 	SecurityToken   string `json:"security_token"`
 }
 
-// getVaultClient : Get a Vault client using Vault official params
-func getVaultClient() (*vault.Client, error) {
-	c, err := vault.NewClient(nil)
-	if err != nil {
-		return nil, fmt.Errorf("Error creating Vault client: %s", err.Error())
-	}
+func extractToken(client *vault.Client, secret *vault.Secret) (*vault.Secret, error) {
+	switch {
+	case secret == nil:
+		return nil, fmt.Errorf("empty response from auth helper")
 
-	if len(os.Getenv("VAULT_ADDR")) == 0 {
-		return nil, fmt.Errorf("VAULT_ADDR env is not defined")
-	}
+	case secret.Auth != nil:
+		return secret, nil
 
-	if err := c.SetAddress(os.Getenv("VAULT_ADDR")); err != nil {
-		return nil, fmt.Errorf("error settings vault client addr: %w", err)
-	}
-
-	token := os.Getenv("VAULT_TOKEN")
-	if len(token) == 0 {
-		home, _ := homedir.Dir()
-		f, err := ioutil.ReadFile(filepath.Clean(home + "/.vault-token"))
-		if err != nil {
-			return nil, fmt.Errorf("Vault token is not defined (VAULT_TOKEN or ~/.vault-token)")
+	case secret.WrapInfo != nil:
+		if secret.WrapInfo.WrappedAccessor == "" {
+			return nil, fmt.Errorf("wrapped response does not contain a token")
 		}
 
-		// The vault client does not handle a trailing newline, so we ensure it
-		// has been removed
-		token = strings.TrimSuffix(string(f), "\n")
+		client.SetToken(secret.WrapInfo.Token)
+		secret, err := client.Logical().Unwrap("")
+		if err != nil {
+			return nil, err
+		}
+		return extractToken(client, secret)
+
+	default:
+		return nil, fmt.Errorf("no auth or wrapping info in response")
+	}
+}
+
+func lookupToken(c *vault.Client, token string) (*vault.Secret, error) {
+	// If we got this far, we want to lookup and lookup the token and pull its
+	// list of policies a metadata.
+	c.SetToken(token)
+	c.SetWrappingLookupFunc(func(string, string) string { return "" })
+
+	secret, err := c.Auth().Token().LookupSelf()
+	if err != nil {
+		return nil, fmt.Errorf("error looking up token: %w", err)
+	}
+	if secret == nil {
+		return nil, fmt.Errorf("empty response from lookup-self")
 	}
 
-	c.SetToken(token)
+	// Return an auth struct that "looks" like the response from an auth method.
+	// lookup and lookup-self return their data in data, not auth. We try to
+	// mirror that data here.
+	id, err := secret.TokenID()
+	if err != nil {
+		return nil, fmt.Errorf("error accessing token ID: %w", err)
+	}
+	accessor, err := secret.TokenAccessor()
+	if err != nil {
+		return nil, fmt.Errorf("error accessing token accessor: %w", err)
+	}
+	// This populates secret.Auth
+	_, err = secret.TokenPolicies()
+	if err != nil {
+		return nil, fmt.Errorf("error accessing token policies: %w", err)
+	}
+	metadata, err := secret.TokenMetadata()
+	if err != nil {
+		return nil, fmt.Errorf("error accessing token metadata: %w", err)
+	}
+	dur, err := secret.TokenTTL()
+	if err != nil {
+		return nil, fmt.Errorf("error converting token TTL: %w", err)
+	}
+	renewable, err := secret.TokenIsRenewable()
+	if err != nil {
+		return nil, fmt.Errorf("error checking if token is renewable: %w", err)
+	}
+	return &vault.Secret{
+		Auth: &vault.SecretAuth{
+			ClientToken:      id,
+			Accessor:         accessor,
+			Policies:         secret.Auth.Policies,
+			TokenPolicies:    secret.Auth.TokenPolicies,
+			IdentityPolicies: secret.Auth.IdentityPolicies,
+			Metadata:         metadata,
 
-	return c, nil
+			LeaseDuration: int(dur.Seconds()),
+			Renewable:     renewable,
+		},
+	}, nil
+}
+
+// getVaultClient : Get a Vault client using Vault official params
+func getVaultClient(authConfig *AuthConfig) (*vault.Client, error) {
+	clientConfig := vault.DefaultConfig()
+	if err := clientConfig.ReadEnvironment(); err != nil {
+		return nil, fmt.Errorf("failed to read environment: %s", err)
+	}
+
+	client, err := vault.NewClient(clientConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Vault client: %s", err)
+	}
+
+	tokenHelper, err := vaultCommand.DefaultTokenHelper()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get token helper: %s", err)
+	}
+
+	// Get the token if it came in from the environment
+	token := client.Token()
+
+	if token == "" {
+		token, err = tokenHelper.Get()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get token from token helper: %s", err)
+		}
+	}
+
+	secret, err := lookupToken(client, token)
+	if err != nil {
+		// TODO: implement warning
+	}
+
+	if secret == nil || secret.Renewable {
+		loginHandlers := map[string]vaultCommand.LoginHandler{
+			"alicloud": &credAliCloud.CLIHandler{},
+			"aws":      &credAws.CLIHandler{},
+			"centrify": &credCentrify.CLIHandler{},
+			"cert":     &credCert.CLIHandler{},
+			"cf":       &credCF.CLIHandler{},
+			"gcp":      &credGcp.CLIHandler{},
+			"github":   &credGitHub.CLIHandler{},
+			"kerberos": &credKerb.CLIHandler{},
+			"ldap":     &credLdap.CLIHandler{},
+			"oci":      &credOCI.CLIHandler{},
+			"oidc":     &credOIDC.CLIHandler{},
+			"okta":     &credOkta.CLIHandler{},
+			"pcf":      &credCF.CLIHandler{}, // Deprecated.
+			"radius": &credUserpass.CLIHandler{
+				DefaultMount: "radius",
+			},
+			"token": &credToken.CLIHandler{},
+			"userpass": &credUserpass.CLIHandler{
+				DefaultMount: "userpass",
+			},
+			// used for jwt (gitlab) and approle auth
+			"write": &write.CLIHandler{},
+		}
+
+		// Get the auth method
+		authMethod := base.SanitizePath(authConfig.AuthMethod)
+		if authMethod == "" {
+			authMethod = "token"
+		}
+
+		config := authConfig.AuthMethodArgs
+
+		flagPath := authConfig.AuthPath
+
+		// If no path is specified, we default the path to the method type
+		// or use the plugin name if it's a plugin
+		authPath := flagPath
+		if authPath == "" && authMethod != "write" {
+			authPath = base.EnsureTrailingSlash(authMethod)
+		}
+
+		// Get the handler function
+		authHandler, ok := loginHandlers[authMethod]
+		if !ok {
+			return nil, fmt.Errorf(
+				"unknown auth method: %s. Use \"vault auth list\" to see the "+
+					"complete list of auth methods. Additionally, some "+
+					"auth methods are only available via the HTTP API",
+				authMethod)
+		}
+
+		if config["mount"] == "" && authPath != "" {
+			config["mount"] = authPath
+		}
+
+		// TODO: implement stdin auth method config parameters
+		// Pull our fake stdin if needed
+		//stdin := (io.Reader)(os.Stdin)
+		//if client.testStdin != nil {
+		//	stdin = client.testStdin
+		//}
+
+		// TODO: implement inline token argument
+		// If the user provided a token, pass it along to the auth provider.
+		//if authMethod == "token" && len(args) > 0 && !strings.Contains(args[0], "=") {
+		//	args = append([]string{"token=" + args[0]}, args[1:]...)
+		//}
+
+		// TODO: implement auth method config parameters parsing (args, stdin)
+		//config, err := parseArgsDataString(stdin, args)
+		//if err != nil {
+		//	client.UI.Error(fmt.Sprintf("Error parsing configuration: %s", err))
+		//	return 1
+		//}
+
+		// Evolving token formats across Vault versions have caused issues during CLI logins. Unless
+		// token auth is being used, omit any token picked up from TokenHelper.
+		if authMethod != "token" {
+			client.SetToken("")
+		}
+
+		// Authenticate delegation to the auth handler
+		secret, err = authHandler.Auth(client, config)
+		if err != nil {
+			return nil, fmt.Errorf("error authenticating: %s", err)
+		}
+
+		// TODO: implement interactive mfa auth method
+		// If there is only one MFA method configured and client.NonInteractive flag is
+		// unset, the login request is validated interactively.
+		//
+		// interactiveMethodInfo here means that `validateMFA` will complete the MFA
+		// by prompting for a password or directing you to a push notification. In
+		// this scenario, no external validation is needed.
+		//interactiveMethodInfo := client.getInteractiveMFAMethodInfo(secret)
+		//if interactiveMethodInfo != nil {
+		//	client.UI.Warn("Initiating Interactive MFA Validation...")
+		//	secret, err = client.validateMFA(secret.Auth.MFARequirement.MFARequestID, *interactiveMethodInfo)
+		//	if err != nil {
+		//		client.UI.Error(err.Error())
+		//		return 2
+		//	}
+		//} else if client.getMFAValidationRequired(secret) {
+		//	// Warn about existing login token, but return here, since the secret
+		//	// won't have any token information if further validation is required.
+		//	client.checkForAndWarnAboutLoginToken()
+		//	client.UI.Warn(wrapAtLength("A login request was issued that is subject to "+
+		//		"MFA validation. Please make sure to validate the login by sending another "+
+		//		"request to sys/mfa/validate endpoint.") + "\n")
+		//	return OutputSecret(client.UI, secret)
+		//}
+
+		// Unset any previous token wrapping functionality. If the original request
+		// was for a wrapped token, we don't want future requests to be wrapped.
+		client.SetWrappingLookupFunc(func(string, string) string { return "" })
+
+		flagNoStore := authConfig.AuthNoStore
+
+		// Recursively extract the token, handling wrapping
+		secret, err = extractToken(client, secret)
+		if err != nil {
+			return nil, fmt.Errorf("error extracting token: %s", err)
+		}
+		if secret == nil {
+			return nil, fmt.Errorf("vault returned an empty secret")
+		}
+
+		if secret.Auth == nil {
+			return nil, fmt.Errorf(base.WrapAtLength(
+				"Vault returned a secret, but the secret has no authentication " +
+					"information attached. This should never happen and is likely a " +
+					"bug."))
+		}
+
+		// Pull the token itself out, since we don't need the rest of the auth
+		// information anymore/.
+		token = secret.Auth.ClientToken
+
+		if !flagNoStore {
+			// Grab the token helper so we can store
+			if err != nil {
+				return nil, fmt.Errorf(base.WrapAtLength(fmt.Sprintf(
+					"Error initializing token helper. Please verify that the token "+
+						"helper is available and properly configured for your system. The "+
+						"error was: %s", err)))
+			}
+
+			// Store the token in the local client
+			if err := tokenHelper.Store(token); err != nil {
+				return nil, fmt.Errorf("error storing token: %s", err)
+				//TODO: implement warning message
+				//client.UI.Error(wrapAtLength(
+				//	"Authentication was successful, but the token was not persisted. The "+
+				//		"resulting token is shown below for your records.") + "\n")
+				//OutputSecret(client.UI, secret)
+			}
+		}
+
+		//home, _ := homedir.Dir()
+		//f, err := ioutil.ReadFile(filepath.Clean(home + "/.vault-token"))
+		//if err != nil {
+		//	return nil, fmt.Errorf("Vault token is not defined (VAULT_TOKEN or ~/.vault-token)")
+		//}
+		//
+		//// The vault client does not handle a trailing newline, so we ensure it
+		//// has been removed
+		//token = strings.TrimSuffix(string(f), "\n")
+	} else {
+		if secret != nil {
+			token = secret.Auth.ClientToken
+		}
+	}
+
+	client.SetToken(token)
+
+	return client, nil
 }
 
 // ListAWSSecretEngines ..

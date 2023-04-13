@@ -34,6 +34,9 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 		flags.LogLevel,
 		flags.Role,
 		flags.State,
+		flags.AuthMethod,
+		flags.AuthPath,
+		flags.AuthNoStore,
 	}
 
 	app.Action = cmd.ExecWrapper(cmd.Switch)

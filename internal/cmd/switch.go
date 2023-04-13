@@ -16,7 +16,7 @@ func Switch(ctx *cli.Context) (int, error) {
 		return 1, err
 	}
 
-	vac, err := client.New()
+	vac, err := client.New(cfg.AuthConfig)
 	if err != nil {
 		return 1, err
 	}

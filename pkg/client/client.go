@@ -11,8 +11,8 @@ type Client struct {
 }
 
 // New ..
-func New() (*Client, error) {
-	vault, err := getVaultClient()
+func New(authConfig *AuthConfig) (*Client, error) {
+	vault, err := getVaultClient(authConfig)
 	if err != nil {
 		return nil, errors.Wrap(err, "initializing vault client")
 	}

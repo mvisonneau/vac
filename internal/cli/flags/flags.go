@@ -1,7 +1,5 @@
 package flags
 
-import "github.com/urfave/cli/v2"
-
 var (
 	Engine = &cli.StringFlag{
 		Name:    "engine",
@@ -59,5 +57,25 @@ var (
 		EnvVars: []string{"VAC_TTL"},
 		Usage:   "ttl `duration`",
 		Value:   0,
+	}
+
+	AuthMethod = &cli.StringFlag{
+		Name:    "auth-method",
+		EnvVars: []string{"VAC_AUTH_METHOD"},
+		Usage:   "method `name` (token, oidc, write)",
+		Value:   "token",
+	}
+
+	AuthPath = &cli.StringFlag{
+		Name:    "auth-path",
+		EnvVars: []string{"VAC_AUTH_PATH"},
+		Usage:   "remote `path` (token/, oidc/, userpass/)",
+		Value:   "",
+	}
+
+	AuthNoStore = &cli.BoolFlag{
+		Name:    "auth-no-store",
+		EnvVars: []string{"VAC_AUTH_NO_STORE"},
+		Usage:   "prevent storing vault token on disk",
 	}
 )
