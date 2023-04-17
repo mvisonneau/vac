@@ -2,20 +2,20 @@ package cmd
 
 import (
 	"fmt"
-	kvbuilder "github.com/hashicorp/go-secure-stdlib/kv-builder"
-	"github.com/mitchellh/mapstructure"
-	"github.com/mvisonneau/vac/pkg/client"
 	"strings"
 	"time"
 
+	kvbuilder "github.com/hashicorp/go-secure-stdlib/kv-builder"
 	"github.com/hashicorp/vault/sdk/helper/mlock"
 	"github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
 
 	"github.com/mvisonneau/go-helpers/logger"
 	"github.com/mvisonneau/vac/internal/cli/flags"
+	"github.com/mvisonneau/vac/pkg/client"
 )
 
 var start time.Time
@@ -92,9 +92,9 @@ func configure(ctx *cli.Context) (*Config, error) {
 		StatePath: statePath,
 
 		AuthConfig: &client.AuthConfig{
-			AuthMethod:     ctx.String("auth-method"),
-			AuthPath:       ctx.String("auth-path"),
-			AuthNoStore:    ctx.Bool("auth-no-store"),
+			AuthMethod:     flags.AuthMethod.Get(ctx),
+			AuthPath:       flags.AuthPath.Get(ctx),
+			AuthNoStore:    flags.AuthNoStore.Get(ctx),
 			AuthMethodArgs: authMethodConfig,
 		},
 	}, nil

@@ -2,13 +2,11 @@ package client
 
 import (
 	"fmt"
-	"github.com/mvisonneau/vac/internal/base"
-	"github.com/mvisonneau/vac/pkg/auth/write"
+	"github.com/pkg/errors"
+	"strconv"
 	"strings"
+	"syscall"
 	"time"
-
-	vault "github.com/hashicorp/vault/api"
-	vaultCommand "github.com/hashicorp/vault/command"
 
 	credAliCloud "github.com/hashicorp/vault-plugin-auth-alicloud"
 	credCentrify "github.com/hashicorp/vault-plugin-auth-centrify"
@@ -17,6 +15,7 @@ import (
 	credOIDC "github.com/hashicorp/vault-plugin-auth-jwt"
 	credKerb "github.com/hashicorp/vault-plugin-auth-kerberos"
 	credOCI "github.com/hashicorp/vault-plugin-auth-oci"
+	vault "github.com/hashicorp/vault/api"
 	credAws "github.com/hashicorp/vault/builtin/credential/aws"
 	credCert "github.com/hashicorp/vault/builtin/credential/cert"
 	credGitHub "github.com/hashicorp/vault/builtin/credential/github"
@@ -24,6 +23,10 @@ import (
 	credOkta "github.com/hashicorp/vault/builtin/credential/okta"
 	credToken "github.com/hashicorp/vault/builtin/credential/token"
 	credUserpass "github.com/hashicorp/vault/builtin/credential/userpass"
+	vaultCommand "github.com/hashicorp/vault/command"
+
+	"github.com/mvisonneau/vac/internal/base"
+	"github.com/mvisonneau/vac/pkg/auth/write"
 )
 
 type AuthConfig struct {
@@ -153,9 +156,26 @@ func getVaultClient(authConfig *AuthConfig) (*vault.Client, error) {
 		}
 	}
 
-	secret, err := lookupToken(client, token)
-	if err != nil {
-		// TODO: implement warning
+	config := authConfig.AuthMethodArgs
+
+	var secret *vault.Secret
+
+	lookup := true
+	if x, ok := config["lookup"]; ok {
+		parsed, err := strconv.ParseBool(x)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse \"lookup\" as boolean: %w", err)
+		}
+		lookup = parsed
+	}
+
+	if lookup {
+		secret, err = lookupToken(client, token)
+		if err != nil {
+			if errors.Is(err, syscall.ECONNREFUSED) {
+				return nil, fmt.Errorf("failed to connect to vault: %s", err)
+			}
+		}
 	}
 
 	if secret == nil || secret.Renewable {
@@ -180,8 +200,7 @@ func getVaultClient(authConfig *AuthConfig) (*vault.Client, error) {
 			"userpass": &credUserpass.CLIHandler{
 				DefaultMount: "userpass",
 			},
-			// used for jwt (gitlab) and approle auth
-			"write": &write.CLIHandler{},
+			"write": &write.CLIHandler{}, // used for jwt (gitlab) and approle auth
 		}
 
 		// Get the auth method
@@ -189,8 +208,6 @@ func getVaultClient(authConfig *AuthConfig) (*vault.Client, error) {
 		if authMethod == "" {
 			authMethod = "token"
 		}
-
-		config := authConfig.AuthMethodArgs
 
 		flagPath := authConfig.AuthPath
 
@@ -211,29 +228,10 @@ func getVaultClient(authConfig *AuthConfig) (*vault.Client, error) {
 				authMethod)
 		}
 
+		// If the user did not specify a mount path, use the provided mount path.
 		if config["mount"] == "" && authPath != "" {
 			config["mount"] = authPath
 		}
-
-		// TODO: implement stdin auth method config parameters
-		// Pull our fake stdin if needed
-		//stdin := (io.Reader)(os.Stdin)
-		//if client.testStdin != nil {
-		//	stdin = client.testStdin
-		//}
-
-		// TODO: implement inline token argument
-		// If the user provided a token, pass it along to the auth provider.
-		//if authMethod == "token" && len(args) > 0 && !strings.Contains(args[0], "=") {
-		//	args = append([]string{"token=" + args[0]}, args[1:]...)
-		//}
-
-		// TODO: implement auth method config parameters parsing (args, stdin)
-		//config, err := parseArgsDataString(stdin, args)
-		//if err != nil {
-		//	client.UI.Error(fmt.Sprintf("Error parsing configuration: %s", err))
-		//	return 1
-		//}
 
 		// Evolving token formats across Vault versions have caused issues during CLI logins. Unless
 		// token auth is being used, omit any token picked up from TokenHelper.
@@ -246,31 +244,6 @@ func getVaultClient(authConfig *AuthConfig) (*vault.Client, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error authenticating: %s", err)
 		}
-
-		// TODO: implement interactive mfa auth method
-		// If there is only one MFA method configured and client.NonInteractive flag is
-		// unset, the login request is validated interactively.
-		//
-		// interactiveMethodInfo here means that `validateMFA` will complete the MFA
-		// by prompting for a password or directing you to a push notification. In
-		// this scenario, no external validation is needed.
-		//interactiveMethodInfo := client.getInteractiveMFAMethodInfo(secret)
-		//if interactiveMethodInfo != nil {
-		//	client.UI.Warn("Initiating Interactive MFA Validation...")
-		//	secret, err = client.validateMFA(secret.Auth.MFARequirement.MFARequestID, *interactiveMethodInfo)
-		//	if err != nil {
-		//		client.UI.Error(err.Error())
-		//		return 2
-		//	}
-		//} else if client.getMFAValidationRequired(secret) {
-		//	// Warn about existing login token, but return here, since the secret
-		//	// won't have any token information if further validation is required.
-		//	client.checkForAndWarnAboutLoginToken()
-		//	client.UI.Warn(wrapAtLength("A login request was issued that is subject to "+
-		//		"MFA validation. Please make sure to validate the login by sending another "+
-		//		"request to sys/mfa/validate endpoint.") + "\n")
-		//	return OutputSecret(client.UI, secret)
-		//}
 
 		// Unset any previous token wrapping functionality. If the original request
 		// was for a wrapped token, we don't want future requests to be wrapped.
@@ -310,11 +283,6 @@ func getVaultClient(authConfig *AuthConfig) (*vault.Client, error) {
 			// Store the token in the local client
 			if err := tokenHelper.Store(token); err != nil {
 				return nil, fmt.Errorf("error storing token: %s", err)
-				//TODO: implement warning message
-				//client.UI.Error(wrapAtLength(
-				//	"Authentication was successful, but the token was not persisted. The "+
-				//		"resulting token is shown below for your records.") + "\n")
-				//OutputSecret(client.UI, secret)
 			}
 		}
 

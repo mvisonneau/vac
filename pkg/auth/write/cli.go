@@ -2,10 +2,12 @@ package write
 
 import (
 	"fmt"
-	"github.com/hashicorp/vault/api"
-	"github.com/mvisonneau/vac/internal/base"
 	"io"
 	"strconv"
+
+	"github.com/hashicorp/vault/api"
+
+	"github.com/mvisonneau/vac/internal/base"
 )
 
 type CLIHandler struct {

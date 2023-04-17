@@ -4,8 +4,9 @@
 package base
 
 import (
-	"github.com/kr/text"
 	"strings"
+
+	"github.com/kr/text"
 )
 
 const (
