@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/olekukonko/tablewriter"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 	"github.com/xeonx/timeago"
 
 	"github.com/mvisonneau/vac/pkg/client"

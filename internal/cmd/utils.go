@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	kvbuilder "github.com/hashicorp/go-secure-stdlib/kv-builder"
@@ -73,17 +72,11 @@ func configure(ctx *cli.Context) (*Config, error) {
 		return nil, errors.Wrap(err, "expanding cache path value (go-homedir)")
 	}
 
-	var authMethodArgs []string
-
-	for _, v := range ctx.Args().Slice() {
-		if strings.Contains(v, "=") {
-			authMethodArgs = append(authMethodArgs, v)
-		}
-	}
+	authMethodArgs := flags.AuthMethodArgs.Get(ctx)
 
 	authMethodConfig, err := parseArgsDataString(authMethodArgs)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing configuration: %s", err)
+		return nil, fmt.Errorf("error parsing auth method args: %s", err)
 	}
 
 	return &Config{

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/mvisonneau/vac/internal/cli/flags"
 	"github.com/mvisonneau/vac/internal/cmd"
@@ -35,6 +35,7 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 		flags.Role,
 		flags.State,
 		flags.AuthMethod,
+		flags.AuthMethodArgs,
 		flags.AuthPath,
 		flags.AuthNoStore,
 	}
