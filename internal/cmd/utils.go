@@ -11,6 +11,7 @@ import (
 	cli "github.com/urfave/cli/v2"
 
 	"github.com/mvisonneau/go-helpers/logger"
+	"github.com/mvisonneau/vac/internal/cli/flags"
 )
 
 var start time.Time
@@ -26,20 +27,20 @@ func configure(ctx *cli.Context) (*Config, error) {
 	start = ctx.App.Metadata["startTime"].(time.Time)
 
 	if err := logger.Configure(logger.Config{
-		Level:  ctx.String("log-level"),
-		Format: ctx.String("log-format"),
+		Format: flags.LogFormat.Get(ctx),
+		Level:  flags.LogLevel.Get(ctx),
 	}); err != nil {
 		return nil, errors.Wrap(err, "configuring logger")
 	}
 
-	statePath, err := homedir.Expand(ctx.String("state"))
+	statePath, err := homedir.Expand(flags.State.Get(ctx))
 	if err != nil {
 		return nil, errors.Wrap(err, "expanding cache path value (go-homedir)")
 	}
 
 	return &Config{
-		Engine:    ctx.String("engine"),
-		Role:      ctx.String("role"),
+		Engine:    flags.Engine.Get(ctx),
+		Role:      flags.Role.Get(ctx),
 		StatePath: statePath,
 	}, nil
 }

@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
 
+	"github.com/mvisonneau/vac/internal/cli/flags"
 	"github.com/mvisonneau/vac/pkg/client"
 	"github.com/mvisonneau/vac/pkg/state"
 )
@@ -38,9 +39,9 @@ func Get(ctx *cli.Context) (int, error) {
 
 	cfg := &GetConfig{
 		Config:        globalCfg,
-		TTL:           ctx.Duration("ttl"),
-		MinTTL:        ctx.Duration("min-ttl"),
-		ForceGenerate: ctx.Bool("force-generate"),
+		TTL:           flags.TTL.Get(ctx),
+		MinTTL:        flags.MinTTL.Get(ctx),
+		ForceGenerate: flags.ForceGenerate.Get(ctx),
 	}
 
 	if cfg.TTL > 0 && cfg.MinTTL > cfg.TTL {
