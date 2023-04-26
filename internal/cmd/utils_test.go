@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 )
 
 func NewTestContext() (ctx *cli.Context, flags, globalFlags *flag.FlagSet) {

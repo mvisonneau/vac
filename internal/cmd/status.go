@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/olekukonko/tablewriter"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 	"github.com/xeonx/timeago"
 
 	"github.com/mvisonneau/vac/pkg/client"
@@ -20,7 +22,7 @@ func Status(ctx *cli.Context) (int, error) {
 		return 1, err
 	}
 
-	vac, err := client.New()
+	vac, err := client.New(cfg.AuthConfig)
 	if err != nil {
 		return 1, err
 	}
@@ -81,12 +83,39 @@ func Status(ctx *cli.Context) (int, error) {
 		return 1, err
 	}
 
+	// Vault token status
+	secret, err := vac.Auth().Token().LookupSelf()
+	if err != nil {
+		return 1, err
+	}
+
+	tokenId, _ := secret.TokenID()
+	tokenAccessor, _ := secret.TokenAccessor()
+
+	_, err = secret.TokenPolicies()
+	if err != nil {
+		return 1, fmt.Errorf("error accessing token policies: %w", err)
+	}
+	tokenPolicies := strings.Join(secret.Auth.Policies, ", ")
+	tokenTokenPolicies := strings.Join(secret.Auth.TokenPolicies, ", ")
+	tokenIdentityPolicies := strings.Join(secret.Auth.IdentityPolicies, ", ")
+
+	tokenDuration, _ := secret.TokenTTL()
+	tokenRenewable, _ := secret.TokenIsRenewable()
+
 	vaultOutput := [][]string{
 		{"ClusterID", health.ClusterID},
 		{"ClusterName", health.ClusterName},
 		{"Initialized", strconv.FormatBool(health.Initialized)},
 		{"Sealed", strconv.FormatBool(health.Sealed)},
 		{"Version", health.Version},
+		{"ClientToken", tokenId},
+		{"Accessor", tokenAccessor},
+		{"Policies", tokenPolicies},
+		{"TokenPolicies", tokenTokenPolicies},
+		{"IdentityPolicies", tokenIdentityPolicies},
+		{"LeaseDuration", tokenDuration.String()},
+		{"Renewable", strconv.FormatBool(tokenRenewable)},
 	}
 
 	vaultTable := tablewriter.NewWriter(os.Stdout)

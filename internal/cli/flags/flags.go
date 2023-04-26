@@ -60,4 +60,30 @@ var (
 		Usage:   "ttl `duration`",
 		Value:   0,
 	}
+
+	AuthMethod = &cli.StringFlag{
+		Name:    "auth-method",
+		EnvVars: []string{"VAC_AUTH_METHOD"},
+		Usage:   "method `name` (token, oidc, write)",
+		Value:   "token",
+	}
+
+	AuthPath = &cli.StringFlag{
+		Name:    "auth-path",
+		EnvVars: []string{"VAC_AUTH_PATH"},
+		Usage:   "remote `path` (token/, oidc/, userpass/)",
+		Value:   "",
+	}
+
+	AuthNoStore = &cli.BoolFlag{
+		Name:    "auth-no-store",
+		EnvVars: []string{"VAC_AUTH_NO_STORE"},
+		Usage:   "prevent storing vault token on disk",
+	}
+
+	AuthMethodArgs = &cli.StringSliceFlag{
+		Name:    "auth-method-args",
+		EnvVars: []string{"VAC_AUTH_METHOD_ARGS"},
+		Usage:   "method `args` `=`(equals sign) delimited (listenaddress=0.0.0.0, port=8250)",
+	}
 )

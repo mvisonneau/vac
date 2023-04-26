@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/ktr0731/go-fuzzyfinder"
 	log "github.com/sirupsen/logrus"
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/mvisonneau/vac/pkg/client"
 	"github.com/mvisonneau/vac/pkg/state"
@@ -16,7 +16,7 @@ func Switch(ctx *cli.Context) (int, error) {
 		return 1, err
 	}
 
-	vac, err := client.New()
+	vac, err := client.New(cfg.AuthConfig)
 	if err != nil {
 		return 1, err
 	}
