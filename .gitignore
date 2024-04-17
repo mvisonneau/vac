@@ -5,3 +5,4 @@ dist
 vac
 vendor
 !cmd/vac
+.idea/
