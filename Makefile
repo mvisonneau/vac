@@ -30,6 +30,11 @@ install: ## Build and install locally the binary (dev purpose)
 build: ## Build the binaries using local GOOS
 	go build ./cmd/$(NAME)
 
+.PHONY: release
+release: ## Build & release the binaries (stable)
+	git tag -d edge
+	go run github.com/goreleaser/goreleaser@v1.25.1 release --clean
+
 .PHONY: prerelease
 prerelease: ## Build & prerelease the binaries (edge)
 	@\
