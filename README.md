@@ -49,6 +49,14 @@ Checksums are signed with the [following GPG key](https://keybase.io/mvisonneau/
 ~$ scoop install vac
 ```
 
+### asdf
+
+```bash
+~$ asdf plugin add vac https://github.com/bodgit/asdf-vac.git
+~$ asdf install vac latest
+~$ asdf global vac latest
+```
+
 ### Binaries, DEB and RPM packages
 
 Have a look onto the [latest release page](https://github.com/mvisonneau/vac/releases/latest) to pick your flavor and version. Here is an helper to fetch the most recent one:
