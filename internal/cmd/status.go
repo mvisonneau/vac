@@ -25,6 +25,14 @@ func Status(ctx *cli.Context) (int, error) {
 		return 1, err
 	}
 
+	locked, unlock, err := fileLock(cfg.LockPath)
+	if err != nil {
+		return 1, err
+	}
+	if locked {
+		defer unlock()
+	}
+
 	s, err := state.Read(cfg.StatePath)
 	if err != nil {
 		return 1, err

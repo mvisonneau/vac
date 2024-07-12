@@ -3,6 +3,9 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"math/rand"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -34,4 +37,24 @@ func TestExit(t *testing.T) {
 	err := exit(20, fmt.Errorf("test"))
 	assert.Equal(t, "", err.Error())
 	assert.Equal(t, 20, err.ExitCode())
+}
+
+const charSet = "abcdefghijklmnopqrstuvwxyz"
+
+func randString(strlen int) string {
+	result := make([]byte, strlen)
+	for i := 0; i < strlen; i++ {
+		result[i] = charSet[rand.Intn(len(charSet))] //nolint:gosec
+	}
+	return string(result)
+}
+
+func TestFileLock(t *testing.T) {
+	fp := filepath.Join(os.TempDir(), randString(8))
+	ok, unlock, err := fileLock(fp)
+	assert.Nil(t, err)
+	assert.True(t, ok)
+	assert.FileExists(t, fp)
+	defer os.Remove(fp)
+	defer unlock()
 }

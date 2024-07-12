@@ -3,6 +3,7 @@ module github.com/mvisonneau/vac
 go 1.22
 
 require (
+	github.com/gofrs/flock v0.12.0
 	github.com/hashicorp/go-secure-stdlib/mlock v0.1.3
 	github.com/hashicorp/vault/api v1.14.0
 	github.com/ktr0731/go-fuzzyfinder v0.8.0
