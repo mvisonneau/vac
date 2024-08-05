@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"context"
+	"fmt"
 	"time"
 
+	"github.com/gofrs/flock"
 	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -19,6 +22,7 @@ type Config struct {
 	Engine    string
 	Role      string
 	StatePath string
+	LockPath  string
 }
 
 func configure(ctx *cli.Context) (*Config, error) {
@@ -40,6 +44,7 @@ func configure(ctx *cli.Context) (*Config, error) {
 		Engine:    flags.Engine.Get(ctx),
 		Role:      flags.Role.Get(ctx),
 		StatePath: statePath,
+		LockPath:  fmt.Sprintf("%s.lock", statePath),
 	}, nil
 }
 
@@ -55,4 +60,13 @@ func exit(exitCode int, err error) cli.ExitCoder {
 	}
 
 	return cli.NewExitError("", exitCode)
+}
+
+func fileLock(filePath string) (bool, func() error, error) {
+	lock := flock.New(filePath)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	locked, err := lock.TryLockContext(ctx, time.Second)
+
+	return locked, lock.Unlock, err
 }
