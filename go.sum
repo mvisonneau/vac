@@ -99,8 +99,11 @@ github.com/Microsoft/go-winio v0.4.15/go.mod h1:tTuCMEN+UleMWgg9dVx4Hu52b1bJo+59
 github.com/Microsoft/go-winio v0.4.16/go.mod h1:XB6nPKklQyQ7GC9LdcBEcBl8PF76WugXOPRXwdLnMv0=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/OpenPeeDeeP/depguard v1.0.1/go.mod h1:xsIw86fROiiwelg+jB2uM9PiKihMMmUx/1V+TNhjQvM=
+github.com/ProtonMail/go-crypto v0.0.0-20210329181949-3900d675f39b/go.mod h1:HTM9X7e9oLwn7RiqLG0UVwVRJenLs3wN+tQ0NPAfwMQ=
+github.com/ProtonMail/go-crypto v0.0.0-20210408094314-bf0c5240ed99/go.mod h1:HTM9X7e9oLwn7RiqLG0UVwVRJenLs3wN+tQ0NPAfwMQ=
 github.com/ProtonMail/go-crypto v0.0.0-20210512092938-c05353c2d58c/go.mod h1:z4/9nQmJSSwwds7ejkxaJwO37dru3geImFUdJlaLzQo=
 github.com/ProtonMail/go-mime v0.0.0-20190923161245-9b5a4261663a/go.mod h1:NYt+V3/4rEeDuaev/zw1zCq8uqVEuPHzDPo3OZrlGJ4=
+github.com/ProtonMail/gopenpgp/v2 v2.1.8/go.mod h1:mjMvRMlOlBhNuaa3z0xOmEgAkba/Mu1Z8uWwYj4/6Ws=
 github.com/ProtonMail/gopenpgp/v2 v2.2.0/go.mod h1:ajUlBGvxMH1UBZnaYO3d1FSVzjiC6kK9XlZYGiDCvpM=
 github.com/Songmu/gocredits v0.2.0/go.mod h1:JBywHzwOmBMF9uidu1EgS3mwVNqZCKOPLPrFd1h7qQo=
 github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
@@ -147,6 +150,7 @@ github.com/caarlos0/ctrlc v1.0.0/go.mod h1:CdXpj4rmq0q/1Eb44M9zi2nKB0QraNKuRGYGr
 github.com/caarlos0/env/v6 v6.6.2/go.mod h1:P0BVSgU9zfkxfSpFUs6KsO3uWR4k3Ac0P66ibAGTybM=
 github.com/caarlos0/go-shellwords v1.0.12/go.mod h1:bYeeX1GrTLPl5cAMYEzdm272qdsQAZiaHgeF0KTk1Gw=
 github.com/caarlos0/testfs v0.4.3/go.mod h1:bRN55zgG4XCUVVHZCeU+/Tz1Q6AxEJOEJTliBy+1DMk=
+github.com/campoy/unique v0.0.0-20180121183637-88950e537e7e/go.mod h1:9IOqJGCPMSc6E5ydlp5NIonxObaeu/Iub/X03EKPVYo=
 github.com/cavaliercoder/go-cpio v0.0.0-20180626203310-925f9528c45e/go.mod h1:oDpT4efm8tSYHXV5tHSdRvBet/b/QzxZ+XyyPehvm3A=
 github.com/cenkalti/backoff v2.1.1+incompatible h1:tKJnvO2kl0zmb/jA5UKAt4VoEVw1qxKWjE/Bpp46npY=
 github.com/cenkalti/backoff v2.1.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
@@ -234,6 +238,7 @@ github.com/fzipp/gocyclo v0.3.1/go.mod h1:DJHO6AUmbdqj2ET4Z9iArSuwWgYDRryYt2wASx
 github.com/gdamore/encoding v1.0.0/go.mod h1:alR0ol34c49FCSBLjhosxzcPHQbf2trDkoo5dl+VrEg=
 github.com/gdamore/encoding v1.0.1 h1:YzKZckdBL6jVt2Gc+5p82qhrGiqMdG/eNs6Wy0u3Uhw=
 github.com/gdamore/encoding v1.0.1/go.mod h1:0Z0cMFinngz9kS1QfMjCP8TY7em3bZYeeklsSDPivEo=
+github.com/gdamore/tcell/v2 v2.3.11/go.mod h1:cTTuF84Dlj/RqmaCIV5p4w8uG1zWdk0SF6oBpwHp4fU=
 github.com/gdamore/tcell/v2 v2.4.0/go.mod h1:cTTuF84Dlj/RqmaCIV5p4w8uG1zWdk0SF6oBpwHp4fU=
 github.com/gdamore/tcell/v2 v2.7.4 h1:sg6/UnTM9jGpZU+oFYAsDahfchWAFW8Xx2yFinNSAYU=
 github.com/gdamore/tcell/v2 v2.7.4/go.mod h1:dSXtXTSK0VsW1biw65DZLZ2NKr7j0qP/0J7ONmsraWg=
@@ -402,7 +407,9 @@ github.com/gordonklaus/ineffassign v0.0.0-20200309095847-7953dde2c7bf/go.mod h1:
 github.com/gordonklaus/ineffassign v0.0.0-20210225214923-2e10b2664254/go.mod h1:M9mZEtGIsR1oDaZagNPNG9iq9n2HrhZ17dsXk73V3Lw=
 github.com/goreleaser/chglog v0.1.2/go.mod h1:tTZsFuSZK4epDXfjMkxzcGbrIOXprf0JFp47BjIr3B8=
 github.com/goreleaser/fileglob v1.2.0/go.mod h1:rFyb2pXaK3YdnYnSjn6lifw0h2Q6s8OfOsx6I6bXkKE=
+github.com/goreleaser/goreleaser v0.173.1/go.mod h1:lRoz5B+3II687HV3EK3FmrBUJeNb24p5E6+hJK7ySz8=
 github.com/goreleaser/goreleaser v0.174.2/go.mod h1:4iqH/ZtpTVyoyatQd8/SIkYu3ROmk2vJ7tRe1Q6ICW0=
+github.com/goreleaser/nfpm/v2 v2.5.1/go.mod h1:Bq9OBKhvhTmdPh6lHUbVBKa3JCw61OgIFEau+vs2CO0=
 github.com/goreleaser/nfpm/v2 v2.6.0/go.mod h1:qaMnjBaZz/2vInOIWx0IbuKuaZpaVB6O8oLG0u4qH1Y=
 github.com/gorhill/cronexpr v0.0.0-20180427100037-88b0669f7d75/go.mod h1:g2644b03hfBX9Ov0ZBDgXXens4rxSxmqFBbhvKv2yVA=
 github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
@@ -632,6 +639,8 @@ github.com/mozilla/scribe v0.0.0-20180711195314-fb71baf557c1/go.mod h1:FIczTrinK
 github.com/mozilla/tls-observatory v0.0.0-20210209181001-cf43108d6880/go.mod h1:FUqVoUPHSEdDR0MnFM3Dh8AU0pZHLXUD127SAJGER/s=
 github.com/mvisonneau/go-fuzzyfinder v0.2.2-0.20210819123512-4ca710a8afbf h1:HddOiZ4asDfBdK3rJNpE/PAIQRQteig9l2VC/EfhtAQ=
 github.com/mvisonneau/go-fuzzyfinder v0.2.2-0.20210819123512-4ca710a8afbf/go.mod h1:SKGYWAc+/xkNkZgfoXkhQajsonmWtgMJwK9xx0IqW0k=
+github.com/mvisonneau/go-fuzzyfinder v0.4.0 h1:gMlUaPBP+G5Ox73bHaWPhXWJjL736GSagJUdeCcik6I=
+github.com/mvisonneau/go-fuzzyfinder v0.4.0/go.mod h1:oZHGywf8wseohNASl7HneKzEJLPgJLBVTAPxBEPouSM=
 github.com/mvisonneau/go-helpers v0.0.1 h1:jp/eaRBixQeCwILkqSDlNIAtRjBdRR3AENTxx5Ts04Y=
 github.com/mvisonneau/go-helpers v0.0.1/go.mod h1:9gxWJlesYQqoVW4jj+okotqvG5CB8BfLD06UbyyfKZA=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
