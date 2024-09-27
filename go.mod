@@ -56,4 +56,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/ktr0731/go-fuzzyfinder => github.com/mvisonneau/go-fuzzyfinder v0.8.1-0.20240927094255-d19e2c0fdc28
+replace github.com/ktr0731/go-fuzzyfinder => github.com/mvisonneau/go-fuzzyfinder v0.8.1-0.20240729030334-ea09ceb9643c

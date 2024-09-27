@@ -71,6 +71,8 @@ github.com/mitchellh/go-homedir v1.1.0 h1:lukF9ziXFxDFPkA1vsr5zpc1XuPDn/wFntq5mG
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
+github.com/mvisonneau/go-fuzzyfinder v0.8.1-0.20240729030334-ea09ceb9643c h1:kGIikYXVRFpFW6I3696lZCyYtWzBcg1m1pp2WbGBLU0=
+github.com/mvisonneau/go-fuzzyfinder v0.8.1-0.20240729030334-ea09ceb9643c/go.mod h1:yYP1wcX0ep5B7nLvMJQpQDkNSz9XZNrFrfcFtXZQg4w=
 github.com/mvisonneau/go-fuzzyfinder v0.8.1-0.20240927094255-d19e2c0fdc28 h1:8k0Ktp/P9mhF4Bnr0rJNjXdaHv4dYhpthOfHLLxJ95U=
 github.com/mvisonneau/go-fuzzyfinder v0.8.1-0.20240927094255-d19e2c0fdc28/go.mod h1:yYP1wcX0ep5B7nLvMJQpQDkNSz9XZNrFrfcFtXZQg4w=
 github.com/mvisonneau/go-helpers v0.0.1 h1:jp/eaRBixQeCwILkqSDlNIAtRjBdRR3AENTxx5Ts04Y=
