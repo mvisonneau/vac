@@ -9,5 +9,11 @@
           matchUpdateTypes: ["minor", "patch", "digest"],
           automerge: true,
       },
+      
+      // Disable forked packages
+      {
+        matchPackageNames: ["github.com/mvisonneau/go-fuzzyfinder"],
+        enabled: false
+      }
   ],
 }
