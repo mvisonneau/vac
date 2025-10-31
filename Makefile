@@ -1,15 +1,7 @@
 NAME          := vac
-FILES         := $(shell git ls-files */*.go)
+COVERAGE_FILE := coverage.out
 REPOSITORY    := mvisonneau/$(NAME)
 .DEFAULT_GOAL := help
-
-.PHONY: setup
-setup: ## Install required libraries/tools for build tasks
-	@command -v gofumpt 2>&1 >/dev/null     || go install mvdan.cc/gofumpt@v0.2.1
-	@command -v gosec 2>&1 >/dev/null       || go install github.com/securego/gosec/v2/cmd/gosec@v2.9.6
-	@command -v ineffassign 2>&1 >/dev/null || go install github.com/gordonklaus/ineffassign@v0.0.0-20210914165742-4cc7213b9bc8
-	@command -v misspell 2>&1 >/dev/null    || go install github.com/client9/misspell/cmd/misspell@v0.3.4
-	@command -v revive 2>&1 >/dev/null      || go install github.com/mgechev/revive@v1.1.3
 
 .PHONY: fmt
 fmt: ## Format source code
@@ -22,7 +14,13 @@ lint: ## Run all lint related tests upon the codebase
 
 .PHONY: test
 test: ## Run the tests against the codebase
-	go test -v -count=1 -race ./...
+	@rm -rf $(COVERAGE_FILE)
+	go test -v -count=1 -race ./... -coverprofile=$(COVERAGE_FILE)
+	@go tool cover -func $(COVERAGE_FILE) | awk '/^total/ {print "coverage: " $$3}'
+
+.PHONY: coverage
+coverage: ## Prints coverage report
+	go tool cover -func $(COVERAGE_FILE)
 
 .PHONY: install
 install: ## Build and install locally the binary (dev purpose)
@@ -48,28 +46,6 @@ prerelease: ## Build & prerelease the binaries (edge)
 .PHONY: clean
 clean: ## Remove binary if it exists
 	rm -f $(NAME)
-
-.PHONY: coverage
-coverage: ## Generates coverage report
-	rm -rf *.out
-	go test -count=1 -race -v ./... -coverpkg=./... -coverprofile=coverage.out
-
-.PHONY: coverage-html
-coverage-html: ## Generates coverage report and displays it in the browser
-	go tool cover -html=coverage.out
-
-.PHONY: dev-env
-dev-env: ## Build a local development environment using Docker
-	@docker run -it --rm \
-		-v $(shell pwd):/go/src/github.com/mvisonneau/$(NAME) \
-		-w /go/src/github.com/mvisonneau/$(NAME) \
-		golang:1.17 \
-		/bin/bash -c 'make setup; make install; bash'
-
-.PHONY: is-git-dirty
-is-git-dirty: ## Tests if git is in a dirty state
-	@git status --porcelain
-	@test $(shell git status --porcelain | grep -c .) -eq 0
 
 .PHONY: all
 all: lint test build coverage ## Test, builds and ship package for all supported platforms
