@@ -29,6 +29,11 @@ func Switch(ctx *cli.Context) (int, error) {
 		defer unlock()
 	}
 
+	err = vac.Authenticate(cfg.AuthInfo)
+	if err != nil {
+		return 1, err
+	}
+
 	s, err := state.Read(cfg.StatePath)
 	if err != nil {
 		return 1, err
